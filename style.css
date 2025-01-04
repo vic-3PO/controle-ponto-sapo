@@ -223,6 +223,13 @@ footer {
         width: 90%;
     }
 
+    #tabela-ponto td input {
+        width: 90%;
+        /* Garante que o input tenha 90% de largura nas telas pequenas */
+        font-size: 0.9rem;
+        /* Ajusta o tamanho da fonte para garantir boa legibilidade */
+    }
+
     footer {
         font-size: 0.8rem;
     }
@@ -232,6 +239,13 @@ footer {
 @media (max-width: 480px) {
     header h1 {
         font-size: 1.2rem;
+    }
+
+    #tabela-ponto td input {
+        width: 90%;
+        /* Mantém a largura em 90% */
+        font-size: 0.8rem;
+        /* Ajuste fino para fontes pequenas em telas menores */
     }
 
     #config-horario h2 {
