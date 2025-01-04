@@ -1,0 +1,187 @@
+/* Estilo geral */
+body {
+    font-family: 'Comic Sans MS', sans-serif;
+    background-color: #eef7e6;
+    color: #3a5a40;
+    margin: 0;
+    padding: 0;
+}
+
+/* Cabeçalho */
+header {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(to bottom, #d4f3c7, #eaf9e0);
+    border-bottom: 2px solid #a3d49f;
+}
+
+header h1 {
+    font-size: 2rem;
+    color: #4b7d57;
+    margin: 0;
+}
+
+header p {
+    font-size: 1rem;
+    color: #5c8b6b;
+}
+
+/* Configuração de horário fixo */
+#config-horario {
+    text-align: center;
+    margin: 20px;
+    padding: 10px;
+    background-color: #d4f3c7;
+    border: 2px solid #a3d49f;
+    border-radius: 10px;
+}
+
+#config-horario h2 {
+    font-size: 1.5rem;
+    color: #4b7d57;
+}
+
+#config-horario label {
+    font-size: 1rem;
+    margin: 5px;
+    color: #3a5a40;
+}
+
+#config-horario input {
+    padding: 5px;
+    font-size: 1rem;
+    margin: 5px;
+    border: 2px solid #a3d49f;
+    border-radius: 5px;
+    background-color: #eef7e6;
+}
+
+#config-horario button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4b7d57;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+#config-horario button:hover {
+    background-color: #3a5a40;
+}
+
+/* Tabela */
+#tabela-ponto {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#tabela-ponto thead {
+    background-color: #d4f3c7;
+    color: #3a5a40;
+}
+
+#tabela-ponto th,
+#tabela-ponto td {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #a3d49f;
+    font-size: 0.9rem;
+}
+
+#tabela-ponto td input {
+    width: 90%;
+    padding: 5px;
+    border: 1px solid #a3d49f;
+    border-radius: 5px;
+    background-color: #eef7e6;
+    color: #3a5a40;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Sapo interativo */
+#sapo-status {
+    text-align: center;
+    margin: 20px;
+    padding: 10px;
+    background-color: #d4f3c7;
+    border: 2px solid #a3d49f;
+    border-radius: 10px;
+}
+
+#sapo-status img {
+    width: 150px;
+    height: auto;
+    margin: 10px 0;
+}
+
+#sapo-status p {
+    font-size: 1.2rem;
+    color: #4b7d57;
+}
+
+/* Rodapé */
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #d4f3c7;
+    border-top: 2px solid #a3d49f;
+    color: #4b7d57;
+    font-size: 0.9rem;
+}
+
+.centraliza {
+    display: flex;
+    justify-content: center;
+    /* Centraliza horizontalmente */
+    align-items: center;
+    /* Centraliza verticalmente */
+}
+
+/* Centralizar o contêiner do seletor de mês */
+#seletor-mes {
+    text-align: center;
+    margin: 20px auto;
+    /* Centraliza horizontalmente */
+    padding: 10px;
+    background-color: #d4f3c7;
+    border: 2px solid #a3d49f;
+    border-radius: 10px;
+    display: inline-block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo do label */
+#seletor-mes label {
+    font-size: 1rem;
+    color: #3a5a40;
+    margin-right: 10px;
+}
+
+/* Estilo do seletor */
+#meses {
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #a3d49f;
+    border-radius: 5px;
+    background-color: #eef7e6;
+    color: #3a5a40;
+    cursor: pointer;
+    text-align: center;
+    width: 200px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover para o seletor */
+#meses:hover {
+    background-color: #d4f3c7;
+    color: #4b7d57;
+    border-color: #4b7d57;
+}

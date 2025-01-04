@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Ponto - Sapinhos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <h1>🐸 Controle de Ponto 🐸</h1>
+        <p>Registre seus horários no lago com estilo!</p>
+    </header>
+    <main>
+        <!-- Configuração de horário fixo -->
+        <section id="config-horario">
+            <h2>🐸 Configure seu horário de trabalho</h2>
+            <label for="horario-entrada">Entrada:</label>
+            <input type="time" id="horario-entrada" value="14:50">
+            <label for="horario-saida">Saída:</label>
+            <input type="time" id="horario-saida" value="21:30">
+
+            <!-- Adicionando campos de pausa -->
+            <label for="pausa-inicio">Início da Pausa:</label>
+            <input type="time" id="pausa-inicio" value="16:00">
+
+            <label for="pausa-fim">Fim da Pausa:</label>
+            <input type="time" id="pausa-fim" value="16:30">
+        </section>
+
+
+        <!-- Seletor de meses -->
+        <div class="centraliza">
+            <div id="seletor-mes">
+                <label for="meses">Selecione o mês:</label>
+                <select id="meses"></select>
+            </div>
+        </div>
+
+
+        <!-- Tabela de controle -->
+        <table id="tabela-ponto">
+            <thead>
+                <tr>
+                    <th>Dia</th>
+                    <th>Entrada</th>
+                    <th>Saída</th>
+                    <th>Pausa (min)</th>
+                    <th>Total (horas)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Linhas serão geradas dinamicamente -->
+            </tbody>
+        </table>
+
+        <!-- Sapo interativo -->
+        <section id="sapo-status">
+            <h2>🐸 Status do Sapinho</h2>
+            <img id="sapo-img" src="sapo-neutro.jpg" alt="Sapinho neutro">
+            <p id="sapo-mensagem">O sapinho está neutro. Vamos fazer progressos! 💼</p>
+        </section>
+    </main>
+    <footer>
+        <p>🌿 Feito com carinho por sapinhos no lago 🌿</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
