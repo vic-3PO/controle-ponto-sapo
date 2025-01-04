@@ -73,15 +73,13 @@ header p {
 
 /* Tabela */
 #tabela-ponto {
-    width: 100%;
+    width: 80%;
     margin: 20px auto;
     border-collapse: collapse;
     background-color: #ffffff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     overflow: hidden;
-    max-width: 100%;
-    table-layout: fixed;
 }
 
 #tabela-ponto thead {
@@ -95,11 +93,10 @@ header p {
     padding: 10px;
     border: 1px solid #a3d49f;
     font-size: 0.9rem;
-    word-wrap: break-word;
 }
 
 #tabela-ponto td input {
-    width: 100%;
+    width: 90%;
     padding: 5px;
     border: 1px solid #a3d49f;
     border-radius: 5px;
@@ -140,17 +137,19 @@ footer {
     font-size: 0.9rem;
 }
 
-/* Centraliza os elementos */
 .centraliza {
     display: flex;
     justify-content: center;
+    /* Centraliza horizontalmente */
     align-items: center;
+    /* Centraliza verticalmente */
 }
 
 /* Centralizar o contêiner do seletor de mês */
 #seletor-mes {
     text-align: center;
     margin: 20px auto;
+    /* Centraliza horizontalmente */
     padding: 10px;
     background-color: #d4f3c7;
     border: 2px solid #a3d49f;
@@ -185,83 +184,4 @@ footer {
     background-color: #d4f3c7;
     color: #4b7d57;
     border-color: #4b7d57;
-}
-
-/* Responsividade para telas pequenas */
-@media (max-width: 768px) {
-    body {
-        font-size: 14px;
-    }
-
-    header h1 {
-        font-size: 1.5rem;
-    }
-
-    #config-horario h2 {
-        font-size: 1.2rem;
-    }
-
-    #config-horario input,
-    #config-horario button {
-        font-size: 0.9rem;
-        width: 90%;
-    }
-
-    #tabela-ponto th,
-    #tabela-ponto td {
-        padding: 8px;
-        font-size: 0.9rem;
-    }
-
-    #seletor-mes {
-        width: 90%;
-        display: block;
-        margin: 20px auto;
-    }
-
-    #meses {
-        width: 90%;
-    }
-
-    footer {
-        font-size: 0.8rem;
-    }
-}
-
-/* Responsividade para telas muito pequenas */
-@media (max-width: 480px) {
-    header h1 {
-        font-size: 1.2rem;
-    }
-
-    #config-horario h2 {
-        font-size: 1rem;
-    }
-
-    #config-horario input,
-    #config-horario button {
-        font-size: 0.8rem;
-    }
-
-    #tabela-ponto th,
-    #tabela-ponto td {
-        font-size: 0.8rem;
-        padding: 6px;
-    }
-
-    #tabela-ponto td input {
-        font-size: 0.8rem;
-    }
-
-    #seletor-mes {
-        width: 90%;
-    }
-
-    #meses {
-        width: 90%;
-    }
-
-    footer {
-        font-size: 0.7rem;
-    }
 }
