@@ -226,3 +226,38 @@ function atualizarStatusSapo(dia, registro, mes, ano) {
         console.log("Sapo neutro");
     }
 }
+
+
+
+
+const clearButton = document.getElementById('clearButton');
+const modal = document.getElementById('myModal');
+const cancelButton = document.getElementById('cancelButton');
+const confirmButton = document.getElementById('confirmButton');
+const frogIcon = document.querySelector('.frog');
+
+// Exibe o modal
+clearButton.addEventListener('click', () => {
+    modal.style.display = 'block';
+});
+
+// Fecha o modal
+cancelButton.addEventListener('click', () => {
+    modal.style.display = 'none';
+});
+
+// Limpa os dados e fecha o modal
+confirmButton.addEventListener('click', () => {
+    localStorage.clear();
+    frogIcon.classList.remove('neutral-frog', 'happy-frog', 'rich-frog');
+    frogIcon.classList.add('rich-frog'); // Muda para sapo rico após limpar os dados
+    modal.style.display = 'none';
+    alert('Dados limpos com sucesso!');
+});
+
+// Fecha o modal se o usuário clicar fora
+window.onclick = function (event) {
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+};
