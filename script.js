@@ -2,7 +2,42 @@ document.addEventListener('DOMContentLoaded', () => {
     preencherSeletorMeses();
     carregarMesAtual();
     carregarDados();
+    carregarConfiguracoesHorarios();
 });
+
+function salvarConfiguracoesHorarios() {
+    const horarioEntrada = document.getElementById('horario-entrada').value;
+    const horarioSaida = document.getElementById('horario-saida').value;
+    const pausaInicio = document.getElementById('pausa-inicio').value;
+    const pausaFim = document.getElementById('pausa-fim').value;
+
+    const horarios = {
+        entrada: horarioEntrada,
+        saida: horarioSaida,
+        pausaInicio: pausaInicio,
+        pausaFim: pausaFim,
+    };
+
+    localStorage.setItem('configuracoesHorarios', JSON.stringify(horarios));
+}
+
+function carregarConfiguracoesHorarios() {
+    const configuracoes = JSON.parse(localStorage.getItem('configuracoesHorarios'));
+
+    if (configuracoes) {
+        document.getElementById('horario-entrada').value = configuracoes.entrada || '14:50';
+        document.getElementById('horario-saida').value = configuracoes.saida || '21:30';
+        document.getElementById('pausa-inicio').value = configuracoes.pausaInicio || '16:00';
+        document.getElementById('pausa-fim').value = configuracoes.pausaFim || '16:30';
+    }
+}
+
+// Adicionando evento de input para salvar as configurações de horário
+document.getElementById('horario-entrada').addEventListener('input', salvarConfiguracoesHorarios);
+document.getElementById('horario-saida').addEventListener('input', salvarConfiguracoesHorarios);
+document.getElementById('pausa-inicio').addEventListener('input', salvarConfiguracoesHorarios);
+document.getElementById('pausa-fim').addEventListener('input', salvarConfiguracoesHorarios);
+
 
 function preencherSeletorMeses() {
     const seletorMeses = document.getElementById('meses');
@@ -105,6 +140,32 @@ function salvarDados() {
         atualizarStatusSapo(dia, dados[dia], mes, ano);  // Atualiza o status do sapo aqui
     }
 }
+
+function carregarDados() {
+    const seletorMeses = document.getElementById('meses');
+    const mesSelecionado = parseInt(seletorMeses.value, 10);
+    const hoje = new Date();
+    const anoAtual = hoje.getFullYear();
+
+    gerarTabela(anoAtual, mesSelecionado);
+
+    const chave = `${anoAtual}-${mesSelecionado}`;
+    const dados = JSON.parse(localStorage.getItem(chave)) || {};
+
+    Object.keys(dados).forEach(dia => {
+        const registro = dados[dia];
+        Object.keys(registro).forEach(campo => {
+            const input = document.querySelector(`input[data-dia="${dia}"][data-campo="${campo}"]`);
+            if (input) {
+                input.value = registro[campo];
+            }
+        });
+
+        // Atualizar o total para cada dia
+        atualizarTotal(dia, registro, mesSelecionado, anoAtual);
+    });
+}
+
 
 function carregarDados() {
     const seletorMeses = document.getElementById('meses');
