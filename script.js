@@ -91,7 +91,7 @@ function gerarTabela(ano, mes) {
         linha.appendChild(colunaDia);
 
         // Colunas de entrada, saída, pausa e total
-        ['entrada', 'saida', 'pausa-inicio', 'pausa-fim', 'total'].forEach(campo => {
+        ['entrada', 'pausa-inicio', 'pausa-fim', 'saida', 'total'].forEach(campo => {
             const coluna = document.createElement('td');
             if (campo === 'entrada' || campo === 'saida' || campo === 'pausa-inicio' || campo === 'pausa-fim') {
                 const input = document.createElement('input');
