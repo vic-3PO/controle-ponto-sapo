@@ -6,12 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Ponto - Sapinhos</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style-game.css">
 </head>
 
 <body>
     <header>
         <h1>🐸 Controle de Ponto 🐸</h1>
         <p>Registre seus horários no lago com estilo!</p>
+        <nav class="menu-jogos">
+            <button class="button" onclick="mostrarSecao('controle')">Controle de Ponto</button>
+            <button class="button" onclick="mostrarSecao('jogos')">Jogos dos Sapinhos</button>
+        </nav>
     </header>
     <main>
         <!-- Configuração de horário fixo -->
@@ -83,12 +88,84 @@
             </div>
         </div>
     </main>
+
+
+    <!-- Seção de Jogos -->
+    <section id="jogos" class="secao-jogos" style="display: none;">
+        <h2>🎮 Jogos dos Sapinhos 🎮</h2>
+        <nav>
+            <button class="button" onclick="mostrarJogo('velha')">Jogo da Velha</button>
+            <button class="button" onclick="mostrarJogo('forca')">Forca Aquática</button>
+            <button class="button" onclick="mostrarJogo('salto')">Salto do Sapinho</button>
+            <button class="button" onclick="mostrarJogo('memoria')">Memória dos Sapinhos</button>
+        </nav>
+
+        <div class="jogos-container">
+            <div id="velha" class="jogo">
+                <h2>Jogo da Velha 🐸</h2>
+                <label for="velha-difficulty">Dificuldade:</label>
+                <select id="velha-difficulty">
+                    <option value="easy">Fácil</option>
+                    <option value="medium">Médio</option>
+                    <option value="hard">Difícil</option>
+                </select>
+                <div class="tabuleiro" id="tabuleiro"></div>
+                <p id="mensagemVelha"></p>
+                <button class="button" onclick="reiniciarJogoVelha()">Reiniciar</button>
+            </div>
+
+
+            <div id="forca" class="jogo">
+                <h2>Forca Aquática 🌊</h2>
+                <label for="forca-difficulty">Dificuldade:</label>
+                <select id="forca-difficulty">
+                    <option value="easy">Fácil</option>
+                    <option value="medium" selected>Médio</option>
+                    <option value="hard">Difícil</option>
+                </select>
+                <p id="palavra"></p>
+                <input type="text" id="entrada" maxlength="1">
+                <button onclick="tentarLetra()">Tentar</button>
+                <p id="dica"></p>
+                <p id="tentativas"></p>
+                <button class="button" onclick="reiniciarForca()">Reiniciar</button>
+            </div>
+
+            <!-- Seção Salto do Sapinho -->
+            <div id="salto" class="jogo">
+                <h2>Salto do Sapinho 🐸</h2>
+                <label for="salto-difficulty">Dificuldade:</label>
+                <select id="salto-difficulty">
+                    <option value="easy">Fácil</option>
+                    <option value="medium" selected>Médio</option>
+                    <option value="hard">Difícil</option>
+                </select>
+                <canvas id="gameCanvas" width="400" height="200"></canvas>
+                <button class="button" onclick="reiniciarSalto()">Reiniciar</button>
+            </div>
+
+            <!-- Seção Memória dos Sapinhos -->
+            <div id="memoria" class="jogo">
+                <h2>Memória dos Sapinhos 🧠</h2>
+                <label for="memoria-difficulty">Dificuldade:</label>
+                <select id="memoria-difficulty">
+                    <option value="easy">Fácil</option>
+                    <option value="medium" selected>Médio</option>
+                    <option value="hard">Difícil</option>
+                </select>
+                <div id="memoria-grid"></div>
+                <button onclick="reiniciarMemoria()">Reiniciar</button>
+            </div>
+
+        </div>
+    </section>
     <footer>
 
         <p>🌿 Feito com carinho por sapinhos no lago 🌿</p>
     </footer>
-    
+
     <script src="script.js"></script>
+    <script src="script-game.js"></script>
 </body>
 
 </html>
