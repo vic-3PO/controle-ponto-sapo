@@ -95,9 +95,10 @@ const perguntas = [
         resposta: "B"
     }
 ];
+
+
 const quizContainer = document.getElementById("quiz-container");
-let currentQuestionIndex = parseInt(localStorage.getItem('currentQuestionIndex')) || 0; // Índice da questão ativa
-let respostas = JSON.parse(localStorage.getItem('respostas')) || []; // Respostas salvas
+let currentQuestionIndex = 0; // Índice da questão ativa
 
 function renderQuiz() {
     quizContainer.innerHTML = "";
@@ -106,6 +107,11 @@ function renderQuiz() {
     perguntas.forEach((questao, index) => {
         const card = document.createElement("div");
         card.classList.add("quiz-card");
+
+        // Se a questão ainda não foi liberada, aplica blur
+        if (index > currentQuestionIndex) {
+            card.classList.add("locked");
+        }
 
         // Se a questão já foi respondida, vamos marcar como flip (resposta visível)
         const isRespondida = index < currentQuestionIndex;
@@ -117,28 +123,26 @@ function renderQuiz() {
         // Lado da frente: exibe a pergunta e alternativas
         const front = document.createElement("div");
         front.classList.add("quiz-card-front");
+        // Só permite interação se for a questão ativa (currentQuestionIndex)
+        const disabledAttr = index === currentQuestionIndex ? "" : "disabled";
         front.innerHTML = `
             <h3>${questao.pergunta}</h3>
             <p><strong>Nível:</strong> ${questao.nivel}</p>
-            ${questao.alternativas.map((alt, i) => {
-            const isChecked = respostas[index] === alt[0] ? "checked" : "";
-            // Adiciona o emoji de "certo" se a resposta foi respondida corretamente
-            const isCorrect = respostas[index] === questao.resposta && alt[0] === questao.resposta ? "✅" : "";
-            return `
-                    <label>
-                        <input type="radio" name="pergunta${index}" value="${alt[0]}" ${isRespondida ? "disabled" : ""} ${isChecked}>
-                        ${alt} ${isCorrect}
-                    </label><br>
-                `;
-        }).join("")}
-            ${!isRespondida ? `<button class="button" onclick="responder(${index})">Responder</button>` : ""}
+            ${questao.alternativas.map((alt, i) => `
+                <label>
+                    <input type="radio" name="pergunta${index}" value="${alt[0]}" ${disabledAttr}>
+                    ${alt}
+                </label><br>
+            `).join("")}
+            ${index === currentQuestionIndex ? `<button class="button" onclick="responder(${index})">Responder</button>` : ""}
         `;
 
-        // Lado de trás: exibe a resposta correta
+        // Lado de trás: exibe a resposta correta e o botão para avançar
         const back = document.createElement("div");
         back.classList.add("quiz-card-back");
         back.innerHTML = `
             <p>✅ Resposta correta: ${questao.resposta}</p>
+            ${index === currentQuestionIndex ? `<button class="button" onclick="proximaQuestao()">Próximo</button>` : ""}
         `;
 
         inner.appendChild(front);
@@ -172,22 +176,16 @@ function responder(index) {
 
     // Adiciona a classe flip ao card ativo para revelar a resposta
     document.getElementsByClassName("quiz-card")[index].classList.add("flip");
+}
 
-    // Salva a resposta no array de respostas
-    respostas[index] = respostaSelecionada;
-    localStorage.setItem('respostas', JSON.stringify(respostas));
-
-    // Atualiza o índice da próxima questão para o localStorage
-    localStorage.setItem('currentQuestionIndex', index + 1);
-    currentQuestionIndex = index + 1;
+function proximaQuestao() {
+    // Avança para a próxima questão e re-renderiza o quiz
+    currentQuestionIndex++;
+    renderQuiz();
 }
 
 function reiniciarQuiz() {
-    // Reinicia o quiz e limpa o localStorage
-    localStorage.removeItem('currentQuestionIndex');
-    localStorage.removeItem('respostas');
     currentQuestionIndex = 0;
-    respostas = [];
     renderQuiz();
 }
 

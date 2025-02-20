@@ -41,12 +41,6 @@
     /* Impede que o conteúdo saia do card */
 }
 
-
-.quiz-card.locked {
-    filter: blur(4px);
-    pointer-events: none;
-}
-
 .quiz-card-back {
     transform: rotateY(180deg);
 }
