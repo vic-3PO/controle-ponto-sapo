@@ -96,69 +96,60 @@ const perguntas = [
     }
 ];
 
-
 const quizContainer = document.getElementById("quiz-container");
 let currentQuestionIndex = 0; // Índice da questão ativa
+let currentModalIndex = null; // Índice da pergunta no modal
 
 function renderQuiz() {
-    quizContainer.innerHTML = "";
+    quizContainer.innerHTML = ""; // Limpar conteúdo anterior
 
-    // Renderiza todos os cards
+    // Renderiza os botões para cada pergunta
     perguntas.forEach((questao, index) => {
-        const card = document.createElement("div");
-        card.classList.add("quiz-card");
+        const button = document.createElement("button");
+        button.classList.add("button");
+        button.innerHTML = `Pergunta ${index + 1}`;
+        button.onclick = () => abrirQuizModal(index); // Abre o modal da pergunta
+        quizContainer.appendChild(button);
+    });
+}
 
-        // Aplica blur se a questão não estiver liberada
-        if (index > currentQuestionIndex) {
-            card.classList.add("locked");
-        }
+// Função para abrir o modal
+// Função para abrir o "quizModal"
+function abrirQuizModal(index) {
+    currentModalIndex = index;
+    const questao = perguntas[index];
 
-        // Se a questão já foi respondida, marca o card como flip
-        const isRespondida = index < currentQuestionIndex;
-        const inner = document.createElement("div");
-        inner.classList.add("quiz-card-inner");
-        if (isRespondida) inner.classList.add("flip");
-
-        // Lado da frente: exibe a pergunta e alternativas
-        const front = document.createElement("div");
-        front.classList.add("quiz-card-front");
-        front.innerHTML = `
+    // Criação do "quizModal"
+    const quizModal = document.createElement("div");
+    quizModal.classList.add("quiz-modal");
+    quizModal.innerHTML = `
+        <div class="quiz-modal-content">
+            <span class="close" onclick="fecharQuizModal()">&times;</span>
             <h3>${questao.pergunta}</h3>
             <p><strong>Nível:</strong> ${questao.nivel}</p>
             ${questao.alternativas.map((alt, i) => `
                 <label>
-                    <input type="radio" name="pergunta${index}" value="${alt[0]}" ${index === currentQuestionIndex ? "" : "disabled"}>
+                    <input type="radio" name="pergunta${index}" value="${alt[0]}">
                     ${alt}
                 </label><br>
             `).join("")}
-            ${index === currentQuestionIndex ? `<button class="button" onclick="responder(${index})">Responder</button>` : ""}
-        `;
-
-        // Lado de trás: exibe a resposta correta e o botão para avançar
-        const back = document.createElement("div");
-        back.classList.add("quiz-card-back");
-        back.innerHTML = `
-            <p>✅ Resposta correta: ${questao.resposta}</p>
-            ${index === currentQuestionIndex ? `<button class="button" onclick="proximaQuestao()">Próximo</button>` : ""}
-        `;
-
-        inner.appendChild(front);
-        inner.appendChild(back);
-        card.appendChild(inner);
-        quizContainer.appendChild(card);
-    });
-
-    // Se todas as perguntas foram respondidas, exibe mensagem de finalização
-    if (currentQuestionIndex >= perguntas.length) {
-        quizContainer.innerHTML = `
-            <h2>Quiz Finalizado!</h2>
-            <button class="button" onclick="reiniciarQuiz()">Refazer Quiz</button>
-        `;
-    }
+            <button class="button" onclick="responder()">Responder</button>
+            <div id="respostaFeedback"></div>
+        </div>
+    `;
+    document.body.appendChild(quizModal);
 }
 
-function responder(index) {
-    const radios = document.getElementsByName(`pergunta${index}`);
+// Função para fechar o "quizModal"
+function fecharQuizModal() {
+    const quizModal = document.querySelector(".quiz-modal");
+    if (quizModal) quizModal.remove();
+}
+
+
+// Função para responder a pergunta
+function responder() {
+    const radios = document.getElementsByName(`pergunta${currentModalIndex}`);
     let respostaSelecionada = null;
     radios.forEach(radio => {
         if (radio.checked) {
@@ -171,18 +162,27 @@ function responder(index) {
         return;
     }
 
-    // Adiciona a classe flip para revelar a resposta no card ativo
-    document.getElementsByClassName("quiz-card")[index].classList.add("flip");
+    const questao = perguntas[currentModalIndex];
+    const feedbackDiv = document.getElementById("respostaFeedback");
+
+    if (respostaSelecionada === questao.resposta) {
+        feedbackDiv.innerHTML = `<p>✅ Resposta correta!</p>`;
+    } else {
+        feedbackDiv.innerHTML = `<p>❌ Resposta incorreta! A resposta correta é: ${questao.resposta}</p>`;
+    }
+
+    // Desabilita as opções de resposta
+    radios.forEach(radio => {
+        radio.disabled = true;
+    });
 }
 
-function proximaQuestao() {
-    currentQuestionIndex++;
-    renderQuiz();
-}
 
+// Função para reiniciar o quiz
 function reiniciarQuiz() {
     currentQuestionIndex = 0;
     renderQuiz();
 }
 
+// Carrega o quiz quando a página estiver pronta
 document.addEventListener("DOMContentLoaded", renderQuiz);
