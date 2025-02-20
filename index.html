@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle de Ponto - Sapinhos</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="style-game.css">
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/style-game.css">
+    <link rel="stylesheet" href="styles/style-quiz.css">
 </head>
 
 <body>
@@ -16,9 +17,10 @@
         <nav class="menu-jogos">
             <button class="button" onclick="mostrarSecao('controle')">Controle de Ponto</button>
             <button class="button" onclick="mostrarSecao('jogos')">Jogos dos Sapinhos</button>
+            <button class="button" onclick="mostrarSecao('quiz')">Quiz dos Sapinhos</button>
         </nav>
     </header>
-    <main>
+    <main id="controle">
         <!-- Configuração de horário fixo -->
         <section id="config-horario">
             <h2>🐸 Configure seu horário de trabalho</h2>
@@ -65,7 +67,7 @@
         <!-- Sapo interativo -->
         <section id="sapo-status">
             <h2>🐸 Status do Sapinho</h2>
-            <img id="sapo-img" src="sapo-neutro.jpg" alt="Sapinho neutro">
+            <img id="sapo-img" src="img/sapo-neutro.jpg" alt="Sapinho neutro">
             <p id="sapo-mensagem">O sapinho está neutro. Vamos fazer progressos! 💼</p>
         </section>
 
@@ -159,13 +161,21 @@
 
         </div>
     </section>
-    <footer>
 
+    <section id="quiz" class="secao-quiz" style="display: none;">
+        <h2>📚 Quiz dos Sapinhos 📚</h2>
+        <div id="quiz-container"></div>
+        <button class="button" onclick="reiniciarQuiz()">Reiniciar Quiz</button>
+    </section>
+
+
+    <footer>
         <p>🌿 Feito com carinho por sapinhos no lago 🌿</p>
     </footer>
 
-    <script src="script.js"></script>
-    <script src="script-game.js"></script>
+    <script src="script/script.js"></script>
+    <script src="script/script-game.js"></script>
+    <script src="script/script-quiz.js"></script>
 </body>
 
 </html>

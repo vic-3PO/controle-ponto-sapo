@@ -2,16 +2,9 @@
 // Controle de Seções e Jogos
 // ============================
 function mostrarSecao(secao) {
-    const main = document.querySelector('main');
-    const jogos = document.getElementById('jogos');
-
-    if (secao === 'controle') {
-        main.style.display = 'block';
-        jogos.style.display = 'none';
-    } else {
-        main.style.display = 'none';
-        jogos.style.display = 'block';
-    }
+    document.querySelectorAll('main, .secao-jogos, .secao-quiz').forEach(el => {
+        el.style.display = el.id === secao ? 'block' : 'none';
+    });
 }
 
 document.getElementById("forca-difficulty").addEventListener("change", reiniciarForca);

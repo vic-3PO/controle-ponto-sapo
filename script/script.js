@@ -269,20 +269,20 @@ function atualizarStatusSapo(dia, registro, mes, ano) {
         const horasMenosTrabalhadas = minutosTrabalhados < (minutosSaidaConfig - minutosEntradaConfig); // Menos horas trabalhadas
 
         if (horaExtraEntrada || horaExtraSaida) {
-            imagemSapo.src = "sapo-rico.jpg";  // Hora extra
+            imagemSapo.src = "img/sapo-rico.jpg";  // Hora extra
             statusSapo.textContent = "Sapo rico, fez hora extra!";
             console.log("Sapo rico - Hora extra");
         } else if (horasMenosTrabalhadas) {
-            imagemSapo.src = "sapo-triste.jpg";  // Menos horas trabalhadas
+            imagemSapo.src = "img/sapo-triste.jpg";  // Menos horas trabalhadas
             statusSapo.textContent = "Sapo triste, fez menos horas que o esperado.";
             console.log("Sapo triste - Menos horas trabalhadas");
         } else {
-            imagemSapo.src = "sapo-feliz.jpg";  // Dentro do horário
+            imagemSapo.src = "img/sapo-feliz.jpg";  // Dentro do horário
             statusSapo.textContent = "Sapo feliz, fez o horário certinho!";
             console.log("Sapo feliz");
         }
     } else {
-        imagemSapo.src = "sapo-neutro.jpg"; // Sem registros
+        imagemSapo.src = "img/sapo-neutro.jpg"; // Sem registros
         statusSapo.textContent = "Sapo neutro, sem registros ainda.";
         console.log("Sapo neutro");
     }
