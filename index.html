@@ -162,12 +162,21 @@
         </div>
     </section>
 
-    <section id="quiz" class="secao-quiz" style="display: none;">
-        <h2>📚 Quiz dos Sapinhos 📚</h2>
+
+    <section id="quiz" class="secao-quiz">
+
+        <div class="score-container">
+            🏆 Acertos: <span id="correct-count">0</span> | ❌ Erros: <span id="wrong-count">0</span>
+        </div>
+
+        <h2>📚 Quiz dos Sapinhos 🐸</h2>
+        <div class="quiz-selector">
+            <div class="quiz-tab active" onclick="carregarQuiz('quiz1')">Geopolítica Básica</div>
+            <div class="quiz-tab" onclick="carregarQuiz('quiz2')">Relações Internacionais</div>
+        </div>
         <div id="quiz-container"></div>
         <button class="button" onclick="reiniciarQuiz()">Reiniciar Quiz</button>
     </section>
-
 
     <footer>
         <p>🌿 Feito com carinho por sapinhos no lago 🌿</p>
