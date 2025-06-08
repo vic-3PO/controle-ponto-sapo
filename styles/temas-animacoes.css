@@ -1,0 +1,72 @@
+/* Animações para os temas */
+@keyframes flutuar {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes girar {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulsar {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.tema-cinnamoroll-anim .elemento-decorativo {
+    animation: flutuar 3s infinite ease-in-out;
+}
+
+.tema-pompompurin-anim .elemento-decorativo {
+    animation: girar 10s infinite linear;
+}
+
+.tema-padrao-anim #sapo-img {
+    animation: pulsar 2s infinite ease-in-out;
+}
+
+.tema-cinnamoroll-anim #sapo-img {
+    animation: flutuar 3s infinite ease-in-out;
+}
+
+.tema-pompompurin-anim #sapo-img {
+    animation: pulsar 2s infinite ease-in-out;
+}
+
+/* Estilos para os elementos decorativos */
+.elemento-decorativo {
+    position: absolute;
+    z-index: 0;
+    transition: all 0.5s ease;
+}
+
+.elemento-decorativo:hover {
+    transform: scale(1.2);
+}
+
+/* Ajustes para o modal */
+.modal-header {
+    border-radius: 15px 15px 0 0;
+}
+
+/* Ajustes para os cards de tema */
+.tema-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tema-card:hover {
+    transform: translateY(-5px);
+}
+
+.tema-card img {
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.tema-card img:hover {
+    transform: scale(1.05);
+}
+

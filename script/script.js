@@ -223,6 +223,19 @@ function atualizarStatusSapo(dia, registro, mes, ano) {
 
     console.log(`Dia: ${dia}, Entrada: ${entrada}, Saída: ${saida}`);
 
+    // Obter o tema atual
+    const temaAtual = localStorage.getItem('tema-atual') || 'padrao';
+    let prefixoImagem = 'sapo';
+    let prefixoNome = 'Sapo';
+    
+    if (temaAtual === 'cinnamoroll') {
+        prefixoImagem = 'cinnamoroll';
+        prefixoNome = 'Cinnamoroll';
+    } else if (temaAtual === 'pompompurin') {
+        prefixoImagem = 'pompompurin';
+        prefixoNome = 'Pompompurin';
+    }
+
     if (entrada && saida) {
         const horarioEntradaConfig = document.getElementById('horario-entrada').value;
         const horarioSaidaConfig = document.getElementById('horario-saida').value;
@@ -269,22 +282,22 @@ function atualizarStatusSapo(dia, registro, mes, ano) {
         const horasMenosTrabalhadas = minutosTrabalhados < (minutosSaidaConfig - minutosEntradaConfig); // Menos horas trabalhadas
 
         if (horaExtraEntrada || horaExtraSaida) {
-            imagemSapo.src = "img/sapo-rico.jpg";  // Hora extra
-            statusSapo.textContent = "Sapo rico, fez hora extra!";
-            console.log("Sapo rico - Hora extra");
+            imagemSapo.src = `img/${prefixoImagem}-rico.${temaAtual === 'padrao' ? 'jpg' : 'png'}`;  // Hora extra
+            statusSapo.textContent = `${prefixoNome} rico, fez hora extra!`;
+            console.log(`${prefixoNome} rico - Hora extra`);
         } else if (horasMenosTrabalhadas) {
-            imagemSapo.src = "img/sapo-triste.jpg";  // Menos horas trabalhadas
-            statusSapo.textContent = "Sapo triste, fez menos horas que o esperado.";
-            console.log("Sapo triste - Menos horas trabalhadas");
+            imagemSapo.src = `img/${prefixoImagem}-triste.${temaAtual === 'padrao' ? 'jpg' : 'png'}`;  // Menos horas trabalhadas
+            statusSapo.textContent = `${prefixoNome} triste, fez menos horas que o esperado.`;
+            console.log(`${prefixoNome} triste - Menos horas trabalhadas`);
         } else {
-            imagemSapo.src = "img/sapo-feliz.jpg";  // Dentro do horário
-            statusSapo.textContent = "Sapo feliz, fez o horário certinho!";
-            console.log("Sapo feliz");
+            imagemSapo.src = `img/${prefixoImagem}-feliz.${temaAtual === 'padrao' ? 'jpg' : 'png'}`;  // Dentro do horário
+            statusSapo.textContent = `${prefixoNome} feliz, fez o horário certinho!`;
+            console.log(`${prefixoNome} feliz`);
         }
     } else {
-        imagemSapo.src = "img/sapo-neutro.jpg"; // Sem registros
-        statusSapo.textContent = "Sapo neutro, sem registros ainda.";
-        console.log("Sapo neutro");
+        imagemSapo.src = `img/${prefixoImagem}-neutro.${temaAtual === 'padrao' ? 'jpg' : 'png'}`; // Sem registros
+        statusSapo.textContent = `${prefixoNome} neutro, sem registros ainda.`;
+        console.log(`${prefixoNome} neutro`);
     }
 }
 
@@ -299,6 +312,14 @@ const frogIcon = document.querySelector('.frog');
 
 // Exibe o modal
 clearButton.addEventListener('click', () => {
+    const temaAtual = localStorage.getItem("tema-atual") || "padrao";
+    let emojiIcon = "🐸";
+    if (temaAtual === "cinnamoroll") {
+        emojiIcon = "☁️";
+    } else if (temaAtual === "pompompurin") {
+        emojiIcon = "🍮";
+    }
+    frogIcon.textContent = emojiIcon;
     modal.style.display = 'block';
 });
 
@@ -307,11 +328,21 @@ cancelButton.addEventListener('click', () => {
     modal.style.display = 'none';
 });
 
-// Limpa os dados e fecha o modal
+    // Limpa os dados e fecha o modal
 confirmButton.addEventListener('click', () => {
     localStorage.clear();
-    frogIcon.classList.remove('neutral-frog', 'happy-frog', 'rich-frog');
-    frogIcon.classList.add('rich-frog'); // Muda para sapo rico após limpar os dados
+    
+    // Obter o tema atual
+    const temaAtual = localStorage.getItem('tema-atual') || 'padrao';
+    const temas = {
+        padrao: { emoji: "🐸", corModalFrog: "#808080" },
+        cinnamoroll: { emoji: "☁️", corModalFrog: "#4682b4" },
+        pompompurin: { emoji: "🍮", corModalFrog: "#b25900" }
+    };
+    
+    const tema = temas[temaAtual] || temas.padrao;
+    
+    frogIcon.style.color = tema.corModalFrog;
     modal.style.display = 'none';
     alert('Dados limpos com sucesso!');
 });

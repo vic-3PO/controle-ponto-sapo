@@ -2,7 +2,7 @@
 // Controle de Seções e Jogos
 // ============================
 function mostrarSecao(secao) {
-    document.querySelectorAll('main, .secao-jogos, .secao-quiz').forEach(el => {
+    document.querySelectorAll('main, .secao-jogos, .secao-quiz, .secao-loja').forEach(el => {
         el.style.display = el.id === secao ? 'block' : 'none';
     });
 }
