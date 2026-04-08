@@ -109,6 +109,16 @@ header p {
     text-align: center;
 }
 
+/* Coluna de status de hora extra */
+.status-dia {
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.total-horas {
+    font-weight: bold;
+}
+
 /* Sapo interativo */
 #sapo-status {
     text-align: center;
@@ -166,8 +176,8 @@ footer {
     margin-right: 10px;
 }
 
-/* Estilo do seletor */
-#meses {
+/* Estilo dos seletores de mês e ano */
+#meses, #anos {
     padding: 10px;
     font-size: 1rem;
     border: 2px solid #a3d49f;
@@ -176,12 +186,15 @@ footer {
     color: #3a5a40;
     cursor: pointer;
     text-align: center;
-    width: 200px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 0 5px;
 }
 
-/* Hover para o seletor */
-#meses:hover {
+#meses { width: 160px; }
+#anos  { width: 90px; }
+
+/* Hover para os seletores */
+#meses:hover, #anos:hover {
     background-color: #d4f3c7;
     color: #4b7d57;
     border-color: #4b7d57;
