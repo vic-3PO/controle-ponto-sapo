@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="styles/style-quiz.css">
     <link rel="stylesheet" href="styles/style-loja.css">
     <link rel="stylesheet" href="styles/temas-animacoes.css">
+    <link rel="stylesheet" href="styles/style-desafio.css">
 </head>
 
 <body>
@@ -33,6 +34,7 @@
         <button class="nav-pill" data-secao="jogos"    onclick="mostrarSecao('jogos')">🎮 Jogos</button>
         <button class="nav-pill" data-secao="quiz"     onclick="mostrarSecao('quiz')">📚 Quiz</button>
         <button class="nav-pill" data-secao="loja"     onclick="mostrarSecao('loja')">🎨 Temas</button>
+        <button class="nav-pill" data-secao="desafio"  onclick="mostrarSecao('desafio')">😈 Desafio</button>
     </nav>
 </header>
 
@@ -233,6 +235,154 @@
 </section>
 
 
+<!-- ═══════════════════════ FORMULÁRIO IMPOSSÍVEL ═══════════════════════ -->
+<section id="desafio" class="secao-desafio" style="display:none;">
+    <h2>😈 Formulário do Desafio</h2>
+    <p style="font-size:.85rem;color:var(--texto-muted);margin-bottom:20px;">Um formulário completamente normal. Não há nada de errado aqui.</p>
+
+    <!-- ── PASSO 1: TERMOS ── -->
+    <div id="desafio-termos">
+        <div class="termos-card">
+            <h3>📄 Termos e Condições</h3>
+            <div class="termos-box">
+                <p><strong>1.</strong> Ao aceitar estes termos você declara estar ciente de que estes termos não servem absolutamente para nada, e que ao marcá-los como lidos consideraremos automaticamente que você está mentindo, pois ninguém lê termos.</p>
+                <p><strong>2.</strong> Ao aceitar estes termos você declara estar ciente de que estes termos não servem absolutamente para nada, e que ao marcá-los como lidos consideraremos automaticamente que você está mentindo, pois ninguém lê termos.</p>
+                <p><strong>3.</strong> Vide item 1.</p>
+                <p><strong>4.</strong> Leia novamente o item 1, mas desta vez com sentimento.</p>
+                <p><strong>5.</strong> Ao aceitar estes termos você declara estar ciente de que estes termos não servem absolutamente para nada, e que ao marcá-los como lidos consideraremos automaticamente que você está mentindo, pois ninguém lê termos.</p>
+                <p><strong>6.</strong> Caso você tenha chegado até aqui, parabéns. Você ainda está lendo o mesmo termo. Item 1.</p>
+                <p><strong>7.</strong> Ao aceitar estes termos você declara estar ciente de que estes termos não servem absolutamente para nada, e que ao marcá-los como lidos consideraremos automaticamente que você está mentindo, pois ninguém lê termos.</p>
+                <p><strong>8.</strong> Este documento foi escrito com muito carinho e pouca informação útil.</p>
+                <p><strong>9.</strong> Ao aceitar estes termos você declara estar ciente de que estes termos não servem absolutamente para nada, e que ao marcá-los como lidos consideraremos automaticamente que você está mentindo, pois ninguém lê termos.</p>
+                <p><strong>10.</strong> Ao aceitar estes termos você declara estar ciente de que estes termos não servem absolutamente para nada, e que ao marcá-los como lidos consideraremos automaticamente que você está mentindo, pois ninguém lê termos.</p>
+                <p><strong>11.</strong> Ainda o mesmo termo. Você pode parar de ler.</p>
+                <p><strong>12.</strong> Ao aceitar estes termos você declara estar ciente de que estes termos não servem absolutamente para nada, e que ao marcá-los como lidos consideraremos automaticamente que você está mentindo, pois ninguém lê termos.</p>
+            </div>
+            <div class="termos-footer">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="cb-termos" checked>
+                    <span>Eu li e aceito os termos e condições</span>
+                </label>
+                <p id="aviso-termos" class="termos-aviso"></p>
+                <button class="button btn-fake-disabled" onclick="irParaFormulario()">
+                    Próxima etapa →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PASSO 2: FORMULÁRIO ── -->
+    <div id="desafio-form" style="display:none;">
+        <p class="form-hint" style="margin-bottom:16px;">Por favor, preencha todos os campos obrigatórios (<span style="color:var(--erro,#c62828)">*</span>) com atenção.</p>
+
+        <!-- 1. Range vertical -->
+        <div class="form-card">
+            <label class="form-label">1. Nível de comprometimento <span class="form-obrigatorio">*</span></label>
+            <p class="form-hint">Arraste a barra até o nível desejado</p>
+            <div style="display:flex;align-items:center;gap:16px;margin-top:8px;">
+                <div class="volume-widget">
+                    <div class="volume-track">
+                        <input type="range" id="range-comprometimento" min="0" max="100" value="50">
+                    </div>
+                </div>
+                <span id="range-val" class="volume-val">50%</span>
+                <span class="form-hint" style="font-size:.7rem">🔊</span>
+            </div>
+        </div>
+
+        <!-- 2. Campo invisível -->
+        <div class="form-card">
+            <label class="form-label">2. Qual é o seu superpoder secreto?
+                <span id="toggle-visivel" class="toggle-visivel-span">(campo invisível)</span>
+            </label>
+            <input type="text" id="campo-secreto" class="campo-invisivel-input" placeholder="escreva aqui">
+            <p class="form-hint">Clique em "(campo invisível)" para revelar o campo.</p>
+        </div>
+
+        <!-- 3. Botão 4× confirmação -->
+        <div class="form-card">
+            <label class="form-label">3. Confirme que você é humano <span class="form-obrigatorio">*</span></label>
+            <p class="form-hint">Processo simples de verificação. Apenas 1 clique.</p>
+            <button class="button" style="margin-top:6px;" onclick="abrirConfirmacao()">Confirmar humanidade</button>
+            <p class="confirma-status-txt" id="confirma-status"></p>
+        </div>
+
+        <!-- 4. Timer pergunta -->
+        <div class="form-card">
+            <label class="form-label">4. Complete a frase <span class="form-obrigatorio">*</span></label>
+            <div class="timer-wrapper">
+                <span class="form-hint">⏱ <span id="timer-num">30</span>s restantes</span>
+                <div class="timer-bar"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
+            </div>
+            <p style="font-size:.92rem;font-weight:700;margin:8px 0 6px;">"A vida é como uma caixa de..."</p>
+            <input type="text" id="resposta-timer" class="campo-input" placeholder="Sua resposta..."
+                   onfocus="resetarTimer()" oninput="resetarTimer()">
+            <p class="form-hint">⚠️ Caso não responda a tempo, o formulário será apagado.</p>
+        </div>
+
+        <!-- 5. Checkbox fugitivo -->
+        <div class="form-card" id="fugitivo-container">
+            <label class="form-label">5. Concordância obrigatória <span class="form-obrigatorio">*</span></label>
+            <p class="form-hint">Marque a caixa abaixo para continuar.</p>
+            <div style="margin-top:8px;min-height:40px;">
+                <label id="label-fugitivo" class="checkbox-label">
+                    <input type="checkbox" id="checkbox-fugitivo">
+                    <span>Concordo com o absurdo desta situação</span>
+                </label>
+            </div>
+            <p class="form-hint fugitivo-tentativas" id="fugitivo-tentativas"></p>
+        </div>
+
+        <!-- 6. Campo espelhado -->
+        <div class="form-card">
+            <label class="form-label">6. Digite seu nome completo</label>
+            <p class="form-hint">⚙️ Ajuste técnico em andamento. Ignore qualquer irregularidade visual.</p>
+            <div class="mirror-wrapper" style="margin-top:6px;">
+                <input type="text" id="nome-espelhado" class="campo-input mirror-input" placeholder="seu nome aqui">
+            </div>
+        </div>
+
+        <!-- 7. Slider CAPTCHA impossível -->
+        <div class="form-card">
+            <label class="form-label">7. Verificação de segurança <span class="form-obrigatorio">*</span></label>
+            <p class="form-hint">Arraste o controle para <strong>exatamente 50%</strong>.</p>
+            <input type="range" id="captcha-slider" min="0" max="100" step="3" value="0" style="width:100%;margin:10px 0 4px;">
+            <p class="form-hint">Valor atual: <strong id="captcha-val">0</strong>% &nbsp;|&nbsp; Alvo: 50%</p>
+            <p id="captcha-feedback" class="impossivel-feedback"></p>
+        </div>
+
+        <!-- Submit -->
+        <div class="form-submit">
+            <button class="button button-grande" onclick="submeterFormImpossivel()">
+                🎉 Enviar formulário
+            </button>
+            <p class="form-hint" style="margin-top:8px;">Ao clicar você concorda com algo. Não sabemos o quê.</p>
+        </div>
+    </div>
+
+    <!-- Modal confirmação 4× -->
+    <div id="confirm-overlay" class="confirm-overlay">
+        <div class="confirm-box">
+            <p class="confirm-step-label" id="confirm-step-label">Etapa 1 / 4</p>
+            <p class="confirm-pergunta" id="confirm-pergunta">Tem certeza?</p>
+            <div class="confirm-btns">
+                <button id="confirm-sim" class="button">✓ Sim</button>
+                <button id="confirm-nao" class="button button-danger">✗ Não</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drama apagado -->
+    <div id="drama-apagado" class="drama-overlay" style="display:none;">
+        <div class="drama-box">
+            <p class="drama-titulo">💥 FORMULÁRIO APAGADO 💥</p>
+            <p>Você demorou demais para responder.</p>
+            <p class="drama-sub">...tá bom, eu restaurei tudo. Pode continuar.</p>
+        </div>
+    </div>
+</section>
+
+
 <!-- ═══════════════════════════ FOOTER ═══════════════════════════════════ -->
 <footer>
     <p>🐸 Feito com carinho 🐸</p>
@@ -245,6 +395,7 @@
 <script src="script/script-game-refactored.js"></script>
 <script src="script/script-quiz.js"></script>
 <script src="script/script-loja.js"></script>
+<script src="script/script-desafio.js"></script>
 
 </body>
 </html>

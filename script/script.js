@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ─── Navegação entre seções ───────────────────────────────────────────────────
 function mostrarSecao(secao) {
-    ['controle','jogos','quiz','loja'].forEach(s => {
+    ['controle','jogos','quiz','loja','desafio'].forEach(s => {
         const el = document.getElementById(s);
         if (el) el.style.display = (s === secao) ? 'block' : 'none';
     });
