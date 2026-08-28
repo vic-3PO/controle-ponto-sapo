@@ -1,136 +1,150 @@
+// ─── Estado global ────────────────────────────────────────────────────────────
+let anoAtual, mesAtual;
+
+const NOMES_SEMANA_CURTO = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+// ─── Inicialização ────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     preencherSeletorAnos();
     preencherSeletorMeses();
     carregarMesAtual();
     carregarDados();
-    carregarConfiguracoesHorarios();
+    restaurarSecaoAtiva();
 });
 
-// ─── Configurações de horário ────────────────────────────────────────────────
-
-function salvarConfiguracoesHorarios() {
-    const horarios = {
-        entrada: document.getElementById('horario-entrada').value,
-        saida: document.getElementById('horario-saida').value,
-        pausaInicio: document.getElementById('pausa-inicio').value,
-        pausaFim: document.getElementById('pausa-fim').value,
-    };
-    localStorage.setItem('configuracoesHorarios', JSON.stringify(horarios));
-    carregarDados(); // recalcula tudo ao mudar horário configurado
-}
-
-function carregarConfiguracoesHorarios() {
-    const conf = JSON.parse(localStorage.getItem('configuracoesHorarios'));
-    if (conf) {
-        document.getElementById('horario-entrada').value = conf.entrada || '14:50';
-        document.getElementById('horario-saida').value = conf.saida || '21:30';
-        document.getElementById('pausa-inicio').value = conf.pausaInicio || '16:00';
-        document.getElementById('pausa-fim').value = conf.pausaFim || '16:30';
-    }
-}
-
-document.getElementById('horario-entrada').addEventListener('input', salvarConfiguracoesHorarios);
-document.getElementById('horario-saida').addEventListener('input', salvarConfiguracoesHorarios);
-document.getElementById('pausa-inicio').addEventListener('input', salvarConfiguracoesHorarios);
-document.getElementById('pausa-fim').addEventListener('input', salvarConfiguracoesHorarios);
-
-// ─── Seletores de mês e ano ──────────────────────────────────────────────────
-
-function preencherSeletorMeses() {
-    const seletorMeses = document.getElementById('meses');
-    const nomesMeses = [
-        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-    ];
-    const mesAtual = new Date().getMonth();
-
-    nomesMeses.forEach((nome, index) => {
-        const opcao = document.createElement('option');
-        opcao.value = index;
-        opcao.textContent = nome;
-        if (index === mesAtual) opcao.selected = true;
-        seletorMeses.appendChild(opcao);
+// ─── Navegação entre seções ───────────────────────────────────────────────────
+function mostrarSecao(secao) {
+    ['controle','jogos','quiz','loja'].forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.style.display = (s === secao) ? 'block' : 'none';
     });
 
-    seletorMeses.addEventListener('change', () => {
-        localStorage.setItem('mesSelecionado', seletorMeses.value);
+    document.querySelectorAll('.nav-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.dataset.secao === secao);
+    });
+
+    localStorage.setItem('secaoAtiva', secao);
+}
+
+function restaurarSecaoAtiva() {
+    const secao = localStorage.getItem('secaoAtiva') || 'controle';
+    mostrarSecao(secao);
+}
+
+// ─── Seletores de mês e ano ───────────────────────────────────────────────────
+function preencherSeletorMeses() {
+    const sel = document.getElementById('meses');
+    const nomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                   'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const mesHoje = new Date().getMonth();
+
+    nomes.forEach((nome, i) => {
+        const op = document.createElement('option');
+        op.value = i;
+        op.textContent = nome;
+        if (i === mesHoje) op.selected = true;
+        sel.appendChild(op);
+    });
+
+    sel.addEventListener('change', () => {
+        localStorage.setItem('mesSelecionado', sel.value);
         carregarDados();
     });
 }
 
 function preencherSeletorAnos() {
-    const seletorAnos = document.getElementById('anos');
-    const anoAtual = new Date().getFullYear();
-    const anoSalvo = parseInt(localStorage.getItem('anoSelecionado')) || anoAtual;
+    const sel = document.getElementById('anos');
+    const anoHoje = new Date().getFullYear();
+    const anoSalvo = parseInt(localStorage.getItem('anoSelecionado')) || anoHoje;
 
-    for (let ano = anoAtual; ano >= anoAtual - 4; ano--) {
-        const opcao = document.createElement('option');
-        opcao.value = ano;
-        opcao.textContent = ano;
-        if (ano === anoSalvo) opcao.selected = true;
-        seletorAnos.appendChild(opcao);
+    for (let a = anoHoje; a >= anoHoje - 4; a--) {
+        const op = document.createElement('option');
+        op.value = a;
+        op.textContent = a;
+        if (a === anoSalvo) op.selected = true;
+        sel.appendChild(op);
     }
 
-    seletorAnos.addEventListener('change', () => {
-        localStorage.setItem('anoSelecionado', seletorAnos.value);
+    sel.addEventListener('change', () => {
+        localStorage.setItem('anoSelecionado', sel.value);
         carregarDados();
     });
 }
 
 function carregarMesAtual() {
-    const mesSalvo = localStorage.getItem('mesSelecionado');
-    const anoSalvo = localStorage.getItem('anoSelecionado');
-
-    if (mesSalvo !== null) document.getElementById('meses').value = mesSalvo;
-    if (anoSalvo !== null) document.getElementById('anos').value = anoSalvo;
+    const ms = localStorage.getItem('mesSelecionado');
+    const as = localStorage.getItem('anoSelecionado');
+    if (ms !== null) document.getElementById('meses').value = ms;
+    if (as !== null) document.getElementById('anos').value  = as;
 }
 
-// ─── Geração da tabela ───────────────────────────────────────────────────────
-
+// ─── Geração da tabela ────────────────────────────────────────────────────────
 function gerarTabela(ano, mes) {
-    const tabelaBody = document.querySelector('#tabela-ponto tbody');
-    tabelaBody.innerHTML = '';
+    const tbody = document.querySelector('#tabela-ponto tbody');
+    tbody.innerHTML = '';
 
-    const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+    const hoje        = new Date();
+    const diasNoMes   = new Date(ano, mes + 1, 0).getDate();
+    const LABELS      = ['Entrada','Almoço (início)','Almoço (fim)','Saída','Total','Status'];
+    const CAMPOS_EDIT = ['entrada','pausa-inicio','pausa-fim','saida'];
 
     for (let dia = 1; dia <= diasNoMes; dia++) {
-        const linha = document.createElement('tr');
+        const date   = new Date(ano, mes, dia);
+        const diaSem = date.getDay();
+        // diaEFolga: folga pela escala — mas NUNCA bloqueia edição
+        const eFolga = typeof diaEFolga === 'function' ? diaEFolga(date) : false;
+        const eHoje  = (date.toDateString() === hoje.toDateString());
 
-        const colunaDia = document.createElement('td');
-        colunaDia.innerText = `${dia}/${mes + 1}/${ano}`;
-        linha.appendChild(colunaDia);
+        const tr = document.createElement('tr');
+        if (eFolga) tr.classList.add('dia-folga');
+        if (eHoje)  tr.classList.add('dia-hoje');
+        tr.dataset.folga = eFolga ? '1' : '0';
 
-        ['entrada', 'pausa-inicio', 'pausa-fim', 'saida', 'total', 'status'].forEach(campo => {
-            const coluna = document.createElement('td');
-            if (['entrada', 'saida', 'pausa-inicio', 'pausa-fim'].includes(campo)) {
-                const input = document.createElement('input');
-                input.type = 'time';
-                input.dataset.dia = dia;
-                input.dataset.mes = mes;
-                input.dataset.ano = ano;
-                input.dataset.campo = campo;
-                input.addEventListener('input', salvarDados);
-                coluna.appendChild(input);
-            } else if (campo === 'total') {
-                coluna.innerText = '--:--';
-                coluna.classList.add('total-horas');
-            } else {
-                coluna.innerText = '--';
-                coluna.classList.add('status-dia');
-            }
-            linha.appendChild(coluna);
+        // Coluna dia
+        const tdDia = document.createElement('td');
+        tdDia.setAttribute('data-label', 'Dia');
+        tdDia.innerHTML = `<span class="dia-semana-label">${NOMES_SEMANA_CURTO[diaSem]}</span>
+                           <span class="dia-data-num">${dia}/${mes+1}</span>`;
+        tr.appendChild(tdDia);
+
+        // Colunas de horário — sempre com inputs (folga é visual, não bloqueia)
+        CAMPOS_EDIT.forEach((campo, idx) => {
+            const td  = document.createElement('td');
+            td.setAttribute('data-label', LABELS[idx]);
+            const inp = document.createElement('input');
+            inp.type  = 'time';
+            inp.dataset.dia   = dia;
+            inp.dataset.mes   = mes;
+            inp.dataset.ano   = ano;
+            inp.dataset.campo = campo;
+            inp.addEventListener('input', salvarDados);
+            td.appendChild(inp);
+            tr.appendChild(td);
         });
 
-        tabelaBody.appendChild(linha);
+        // Coluna total
+        const tdTotal = document.createElement('td');
+        tdTotal.setAttribute('data-label', 'Total');
+        tdTotal.classList.add('total-horas');
+        tdTotal.innerHTML = eFolga ? '<span class="chip chip-folga">☀ Folga</span>' : '--:--';
+        tr.appendChild(tdTotal);
+
+        // Coluna status
+        const tdStatus = document.createElement('td');
+        tdStatus.setAttribute('data-label', 'Status');
+        tdStatus.classList.add('status-dia');
+        tdStatus.textContent = '--';
+        tr.appendChild(tdStatus);
+
+        tbody.appendChild(tr);
     }
 }
 
 // ─── Salvar / carregar dados ──────────────────────────────────────────────────
-
 function salvarDados() {
-    const dia = this.dataset.dia;
-    const mes = this.dataset.mes;
-    const ano = this.dataset.ano;
+    const dia   = this.dataset.dia;
+    const mes   = this.dataset.mes;
+    const ano   = this.dataset.ano;
     const campo = this.dataset.campo;
     const valor = this.value;
 
@@ -140,196 +154,166 @@ function salvarDados() {
     dados[dia][campo] = valor;
     localStorage.setItem(chave, JSON.stringify(dados));
 
-    atualizarTotal(dia, dados[dia]);
-    atualizarStatusSapo(dia, dados[dia]);
+    const date = new Date(parseInt(ano), parseInt(mes), parseInt(dia));
+    atualizarTotal(dia, dados[dia], date);
+    atualizarStatusSapo(dia, dados[dia], date);
 }
 
 function carregarDados() {
-    const mesSelecionado = parseInt(document.getElementById('meses').value, 10);
-    const anoSelecionado = parseInt(document.getElementById('anos').value, 10);
+    mesAtual = parseInt(document.getElementById('meses').value, 10);
+    anoAtual = parseInt(document.getElementById('anos').value, 10);
 
-    gerarTabela(anoSelecionado, mesSelecionado);
+    gerarTabela(anoAtual, mesAtual);
 
-    const chave = `${anoSelecionado}-${mesSelecionado}`;
+    const chave = `${anoAtual}-${mesAtual}`;
     const dados = JSON.parse(localStorage.getItem(chave)) || {};
 
     Object.keys(dados).forEach(dia => {
-        const registro = dados[dia];
-        Object.keys(registro).forEach(campo => {
-            const input = document.querySelector(`input[data-dia="${dia}"][data-campo="${campo}"]`);
-            if (input) input.value = registro[campo];
+        const reg = dados[dia];
+        Object.keys(reg).forEach(campo => {
+            const inp = document.querySelector(`input[data-dia="${dia}"][data-campo="${campo}"]`);
+            if (inp) inp.value = reg[campo];
         });
-        atualizarTotal(dia, registro);
+        const date = new Date(anoAtual, mesAtual, parseInt(dia));
+        atualizarTotal(dia, reg, date);
     });
 }
 
-// ─── Cálculos de horas ────────────────────────────────────────────────────────
-
+// ─── Cálculo de horas ─────────────────────────────────────────────────────────
 function calcularMinutos(registro) {
     const entrada = registro['entrada'];
-    const saida = registro['saida'];
-    const pausaInicio = registro['pausa-inicio'];
-    const pausaFim = registro['pausa-fim'];
-
+    const saida   = registro['saida'];
     if (!entrada || !saida) return null;
 
-    const [hE, mE] = entrada.split(':').map(Number);
-    const [hS, mS] = saida.split(':').map(Number);
+    const [hE,mE] = entrada.split(':').map(Number);
+    const [hS,mS] = saida.split(':').map(Number);
+    let total = (hS*60+mS) - (hE*60+mE);
+    if (total < 0) total += 1440;
 
-    let total = (hS * 60 + mS) - (hE * 60 + mE);
-    if (total < 0) total += 24 * 60; // virou meia-noite
-
-    if (pausaInicio && pausaFim) {
-        const [hPI, mPI] = pausaInicio.split(':').map(Number);
-        const [hPF, mPF] = pausaFim.split(':').map(Number);
-        const pausa = (hPF * 60 + mPF) - (hPI * 60 + mPI);
+    const pI = registro['pausa-inicio'];
+    const pF = registro['pausa-fim'];
+    if (pI && pF) {
+        const [hPI,mPI] = pI.split(':').map(Number);
+        const [hPF,mPF] = pF.split(':').map(Number);
+        const pausa = (hPF*60+mPF) - (hPI*60+mPI);
         if (pausa > 0) total -= pausa;
     }
 
     return total;
 }
 
-function calcularMinutosEsperados() {
-    const entradaConf = document.getElementById('horario-entrada').value;
-    const saidaConf = document.getElementById('horario-saida').value;
-    const pausaInicioConf = document.getElementById('pausa-inicio').value;
-    const pausaFimConf = document.getElementById('pausa-fim').value;
-
-    if (!entradaConf || !saidaConf) return null;
-
-    const [hE, mE] = entradaConf.split(':').map(Number);
-    const [hS, mS] = saidaConf.split(':').map(Number);
-    let esperado = (hS * 60 + mS) - (hE * 60 + mE);
-
-    if (pausaInicioConf && pausaFimConf) {
-        const [hPI, mPI] = pausaInicioConf.split(':').map(Number);
-        const [hPF, mPF] = pausaFimConf.split(':').map(Number);
-        const pausa = (hPF * 60 + mPF) - (hPI * 60 + mPI);
-        if (pausa > 0) esperado -= pausa;
-    }
-
-    return esperado;
-}
-
-function formatarTempo(minutos) {
-    const h = Math.floor(Math.abs(minutos) / 60);
-    const m = Math.abs(minutos) % 60;
+function formatarTempo(min) {
+    const h = Math.floor(Math.abs(min) / 60);
+    const m = Math.abs(min) % 60;
     return h > 0 ? `${h}h ${m}min` : `${m}min`;
 }
 
-// ─── Atualizar células de total e status ─────────────────────────────────────
+// ─── Atualizar total e status ─────────────────────────────────────────────────
+function atualizarTotal(dia, registro, date) {
+    if (!date) date = new Date(anoAtual, mesAtual, parseInt(dia));
 
-function atualizarTotal(dia, registro) {
-    const totalMinutos = calcularMinutos(registro);
-    const totalCelula = document.querySelector(`#tabela-ponto tbody tr:nth-child(${dia}) .total-horas`);
-    const statusCelula = document.querySelector(`#tabela-ponto tbody tr:nth-child(${dia}) .status-dia`);
+    const totalMin  = calcularMinutos(registro);
+    const totalCell = document.querySelector(`#tabela-ponto tbody tr:nth-child(${dia}) .total-horas`);
+    const statCell  = document.querySelector(`#tabela-ponto tbody tr:nth-child(${dia}) .status-dia`);
 
-    if (!totalCelula) return;
+    if (!totalCell) return;
 
-    if (totalMinutos === null || totalMinutos <= 0) {
-        totalCelula.innerText = '--:--';
-        if (statusCelula) {
-            statusCelula.innerText = '--';
-            statusCelula.style.color = '';
-            statusCelula.style.fontWeight = '';
-        }
+    if (totalMin === null || totalMin <= 0) {
+        const tr2 = totalCell.closest('tr');
+        const ehFolga = tr2 && tr2.dataset.folga === '1';
+        totalCell.innerHTML = ehFolga ? '<span class="chip chip-folga">☀ Folga</span>' : '--:--';
+        if (statCell) statCell.innerHTML = '--';
         return;
     }
 
-    totalCelula.innerText = formatarTempo(totalMinutos);
+    totalCell.textContent = formatarTempo(totalMin);
+    if (!statCell) return;
 
-    if (!statusCelula) return;
+    // Se o dia é folga mas tem horas → trata como trabalhado (override)
+    const tr = totalCell.closest('tr');
+    const forceWork = tr && tr.dataset.folga === '1';
+    const esperado = typeof calcularMinutosEsperadosDia === 'function'
+        ? calcularMinutosEsperadosDia(date, forceWork)
+        : null;
 
-    const esperado = calcularMinutosEsperados();
-    if (esperado === null) return;
+    if (esperado === null) { statCell.innerHTML = '--'; return; }
 
-    const diff = totalMinutos - esperado;
+    const diff = totalMin - esperado;
 
     if (diff > 5) {
-        statusCelula.innerText = `⏰ Hora extra: +${formatarTempo(diff)}`;
-        statusCelula.style.color = '#2e7d32';
-        statusCelula.style.fontWeight = 'bold';
+        statCell.innerHTML = `<span class="chip chip-sucesso">⏰ +${formatarTempo(diff)}</span>`;
     } else if (diff < -5) {
-        statusCelula.innerText = `⚠ Faltou: -${formatarTempo(diff)}`;
-        statusCelula.style.color = '#c62828';
-        statusCelula.style.fontWeight = 'bold';
+        statCell.innerHTML = `<span class="chip chip-erro">⚠ -${formatarTempo(Math.abs(diff))}</span>`;
     } else {
-        statusCelula.innerText = '✓ No horário';
-        statusCelula.style.color = '#1565c0';
-        statusCelula.style.fontWeight = 'normal';
+        statCell.innerHTML = `<span class="chip chip-info">✓ No horário</span>`;
     }
 }
 
-// ─── Status do sapo ───────────────────────────────────────────────────────────
+// ─── Status do mascote ────────────────────────────────────────────────────────
+function atualizarStatusSapo(dia, registro, date) {
+    if (!date) date = new Date(anoAtual, mesAtual, parseInt(dia));
 
-function atualizarStatusSapo(dia, registro) {
-    const imagemSapo = document.getElementById('sapo-img');
-    const statusSapo = document.getElementById('sapo-mensagem');
+    const imgSapo   = document.getElementById('sapo-img');
+    const msgSapo   = document.getElementById('sapo-mensagem');
+    if (!imgSapo || !msgSapo) return;
 
-    const temaAtual = localStorage.getItem('tema-atual') || 'padrao';
-    const ext = temaAtual === 'padrao' ? 'jpg' : 'png';
-    let prefixo = 'sapo';
-    let nome = 'Sapo';
+    const tema   = localStorage.getItem('tema-atual') || 'padrao';
+    const cfg    = { padrao: ['sapo','Sapinho','jpg'], cinnamoroll: ['cinnamoroll','Cinnamoroll','png'], pompompurin: ['pompompurin','Pompompurin','png'] };
+    const [pfx, nome, ext] = cfg[tema] || cfg.padrao;
 
-    if (temaAtual === 'cinnamoroll') { prefixo = 'cinnamoroll'; nome = 'Cinnamoroll'; }
-    else if (temaAtual === 'pompompurin') { prefixo = 'pompompurin'; nome = 'Pompompurin'; }
+    const totalMin  = calcularMinutos(registro);
+    const forceWork = totalMin !== null && typeof diaEFolga === 'function' && diaEFolga(date);
+    const esperado  = typeof calcularMinutosEsperadosDia === 'function'
+        ? calcularMinutosEsperadosDia(date, forceWork)
+        : null;
 
-    const totalMinutos = calcularMinutos(registro);
-    const esperado = calcularMinutosEsperados();
+    let estado, msg;
 
-    if (totalMinutos !== null && totalMinutos > 0 && esperado !== null) {
-        const diff = totalMinutos - esperado;
-
+    if (totalMin !== null && totalMin > 0 && esperado !== null) {
+        const diff = totalMin - esperado;
         if (diff > 5) {
-            imagemSapo.src = `img/${prefixo}-rico.${ext}`;
-            statusSapo.textContent = `${nome} rico! Fez ${formatarTempo(diff)} de hora extra! 💰`;
+            estado = 'rico';
+            msg = `${nome} rico! Fez ${formatarTempo(diff)} de hora extra! 💰`;
         } else if (diff < -5) {
-            imagemSapo.src = `img/${prefixo}-triste.${ext}`;
-            statusSapo.textContent = `${nome} triste! Faltaram ${formatarTempo(Math.abs(diff))} para completar o horário. 😢`;
+            estado = 'triste';
+            msg = `${nome} triste! Faltaram ${formatarTempo(Math.abs(diff))} para completar. 😢`;
         } else {
-            imagemSapo.src = `img/${prefixo}-feliz.${ext}`;
-            statusSapo.textContent = `${nome} feliz! Fez o horário certinho! ✅`;
+            estado = 'feliz';
+            msg = `${nome} feliz! Horário certinho! ✅`;
         }
     } else {
-        imagemSapo.src = `img/${prefixo}-neutro.${ext}`;
-        statusSapo.textContent = `${nome} neutro. Sem registros ainda. 💼`;
+        estado = 'neutro';
+        msg = `${nome} neutro. Sem registros ainda. 💼`;
     }
+
+    imgSapo.src = `img/${pfx}-${estado}.${ext}`;
+    imgSapo.classList.add('mascote-troca');
+    imgSapo.addEventListener('animationend', () => imgSapo.classList.remove('mascote-troca'), { once: true });
+    msgSapo.textContent = msg;
 }
 
 // ─── Modal de limpar dados ────────────────────────────────────────────────────
-
-const clearButton = document.getElementById('clearButton');
-const modal = document.getElementById('myModal');
-const cancelButton = document.getElementById('cancelButton');
+const modal         = document.getElementById('myModal');
+const clearButton   = document.getElementById('clearButton');
+const cancelButton  = document.getElementById('cancelButton');
 const confirmButton = document.getElementById('confirmButton');
-const frogIcon = document.querySelector('.frog');
 
 clearButton.addEventListener('click', () => {
-    const temaAtual = localStorage.getItem('tema-atual') || 'padrao';
-    frogIcon.textContent = temaAtual === 'cinnamoroll' ? '☁️' : temaAtual === 'pompompurin' ? '🍮' : '🐸';
-    modal.style.display = 'block';
+    modal.classList.add('aberto');
 });
 
 cancelButton.addEventListener('click', () => {
-    modal.style.display = 'none';
+    modal.classList.remove('aberto');
 });
 
 confirmButton.addEventListener('click', () => {
-    const temaAtual = localStorage.getItem('tema-atual') || 'padrao';
-    const mesSelecionado = document.getElementById('meses').value;
-    const anoSelecionado = document.getElementById('anos').value;
-
-    // Limpa apenas os dados de ponto (preserva tema e preferências de navegação)
-    const chave = `${anoSelecionado}-${mesSelecionado}`;
-    localStorage.removeItem(chave);
-
-    modal.style.display = 'none';
+    const ms = document.getElementById('meses').value;
+    const as = document.getElementById('anos').value;
+    localStorage.removeItem(`${as}-${ms}`);
+    modal.classList.remove('aberto');
     carregarDados();
-    alert('Dados do mês limpos com sucesso!');
 });
 
-window.onclick = function (event) {
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
-};
+window.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.remove('aberto');
+});

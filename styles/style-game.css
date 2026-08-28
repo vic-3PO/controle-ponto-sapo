@@ -1,42 +1,29 @@
-/* Menu de navegação */
-.menu-jogos {
-    margin: 20px 0;
+/* ── Menu de jogos / navegação interna ──────────────────────────────── */
+.secao-jogos nav {
     display: flex;
     gap: 10px;
     justify-content: center;
-}
-
-/* Seção de Jogos */
-.secao-jogos {
-    padding: 20px;
-    background-color: #d4f3c7;
-    border-radius: 15px;
-    margin: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+    margin-bottom: 20px;
 }
 
 .jogos-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
-    margin-top: 20px;
-}
-
-nav button {
-    margin: 5px;
-    padding: 10px;
-    cursor: pointer;
+    margin-top: 10px;
 }
 
 .jogo {
     display: none;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
+/* Tabuleiro Jogo da Velha */
 .tabuleiro {
     display: grid;
     grid-template-columns: repeat(3, 100px);
-    gap: 5px;
+    gap: 6px;
     justify-content: center;
     margin: 20px auto;
 }
@@ -44,18 +31,27 @@ nav button {
 .tabuleiro div {
     width: 100px;
     height: 100px;
-    background-color: white;
-    border: 2px solid #4caf50;
+    background: var(--superficie);
+    border: 2px solid var(--borda);
+    border-radius: 14px;
     font-size: 2em;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    transition: background var(--trans), border-color var(--trans);
+    box-shadow: var(--sombra-sm);
 }
 
+.tabuleiro div:hover { background: var(--fundo-2); border-color: var(--primaria); }
+
 canvas {
-    background-color: white;
-    border: 2px solid #4caf50;
+    background: var(--superficie);
+    border: 2px solid var(--borda);
+    border-radius: 14px;
+    box-shadow: var(--sombra-sm);
+    display: block;
+    margin: 0 auto;
 }
 
 #memoria-grid {
@@ -68,61 +64,59 @@ canvas {
 .carta {
     width: 100px;
     height: 100px;
-    background-color: white;
-    border: 2px solid #4caf50;
+    background: var(--superficie);
+    border: 2px solid var(--borda);
+    border-radius: 14px;
     font-size: 2em;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: var(--sombra-sm);
+    transition: transform var(--trans), box-shadow var(--trans);
 }
 
-/* Estilo para o label */
+.carta:hover { transform: translateY(-2px); box-shadow: var(--sombra-card); }
+
+/* Labels de dificuldade */
 label[for="velha-difficulty"],
 label[for="salto-difficulty"],
 label[for="memoria-difficulty"],
 label[for="forca-difficulty"] {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    font-size: 1.2em;
-    color: #2e7d32;
-    /* verde escuro */
-    margin-right: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--texto-muted);
+    margin-right: 8px;
 }
 
-/* Estilo para o seletor */
+/* Selects de dificuldade */
 #velha-difficulty,
 #salto-difficulty,
 #memoria-difficulty,
 #forca-difficulty {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-    font-size: 1em;
-    color: #ffffff;
-    background: linear-gradient(135deg, #66bb6a, #388e3c);
-    border: 2px solid #2e7d32;
-    border-radius: 5px;
-    padding: 5px 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primaria), var(--primaria-esc));
+    border: 2px solid var(--primaria-esc);
+    border-radius: 10px;
+    padding: 5px 12px;
     cursor: pointer;
     outline: none;
-    transition: background 0.3s ease, transform 0.2s ease;
+    transition: opacity var(--trans);
 }
 
-/* Efeito ao passar o mouse sobre o seletor */
 #velha-difficulty:hover,
 #salto-difficulty:hover,
 #memoria-difficulty:hover,
-#forca-difficulty:hover {
-    background: linear-gradient(135deg, #81c784, #43a047);
-    transform: scale(1.05);
-}
+#forca-difficulty:hover { opacity: 0.85; }
 
-/* Estilo para as opções do seletor */
 #velha-difficulty option,
 #salto-difficulty option,
 #memoria-difficulty option,
 #forca-difficulty option {
-    background: #66bb6a;
-    /* fundo verde */
-    color: #ffffff;
-    /* texto branco */
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background: var(--primaria-esc);
+    color: #fff;
 }

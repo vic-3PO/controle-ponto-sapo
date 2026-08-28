@@ -1,72 +1,86 @@
-/* Estilos para a loja de temas */
-.secao-loja {
-    padding: 20px;
-    background-color: #d4f3c7;
-    border-radius: 15px;
-    margin: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
+/* ── Loja de Temas ───────────────────────────────────────────────────── */
 .loja-descricao {
     text-align: center;
-    font-size: 1.2em;
-    margin-bottom: 20px;
-    color: #3a5a40;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--texto-muted);
+    margin-bottom: 24px;
 }
 
 .temas-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 20px;
-    margin-top: 20px;
 }
 
 .tema-card {
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: var(--superficie);
+    border: 2px solid var(--borda);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    box-shadow: var(--sombra-card);
     text-align: center;
-    transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-.tema-card:hover {
-    transform: translateY(-5px);
+.tema-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, var(--fundo-2) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 .tema-card img {
     width: 100%;
     height: 150px;
     object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 10px;
+    border-radius: 14px;
+    margin-bottom: 14px;
+    box-shadow: var(--sombra-sm);
+    position: relative;
 }
 
 .tema-card h3 {
-    color: #4b7d57;
-    margin: 10px 0;
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: var(--primaria-esc);
+    margin-bottom: 6px;
+    position: relative;
 }
 
 .tema-card p {
-    color: #666;
-    margin-bottom: 15px;
-    font-size: 0.9em;
+    color: var(--texto-muted);
+    margin-bottom: 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    position: relative;
+}
+
+/* Paleta de cores do tema dentro do card */
+.tema-swatches {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.tema-swatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.7);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 
 .tema-ativo {
-    background-color: #4b7d57 !important;
-    cursor: default !important;
+    background: var(--primaria-esc) !important;
+    cursor: default;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-    .temas-container {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-}
-
-@media (max-width: 480px) {
-    .temas-container {
-        grid-template-columns: 1fr;
-    }
+/* Responsive */
+@media (max-width: 600px) {
+    .temas-container { grid-template-columns: 1fr; }
 }

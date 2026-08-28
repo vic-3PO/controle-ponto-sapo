@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Ponto - Sapinhos</title>
+    <title>Controle de Ponto</title>
+
+    <!-- Fonts: Nunito (kawaii-cozy) + IBM Plex Mono (horários) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/style-game.css">
     <link rel="stylesheet" href="styles/style-quiz.css">
@@ -13,213 +18,233 @@
 </head>
 
 <body>
-    <header>
-        <h1>🐸 Controle de Ponto 🐸</h1>
-        <p>Registre seus horários no lago com estilo!</p>
-        <nav class="menu-jogos">
-            <button class="button" onclick="mostrarSecao('controle')">Controle de Ponto</button>
-            <button class="button" onclick="mostrarSecao('jogos')">Jogos dos Sapinhos</button>
-            <button class="button" onclick="mostrarSecao('quiz')">Quiz dos Sapinhos</button>
-            <button class="button" onclick="mostrarSecao('loja')">Loja de Temas</button>
-        </nav>
-    </header>
-    <main id="controle">
-        <!-- Configuração de horário fixo -->
-        <section id="config-horario">
-            <h2>🐸 Configure seu horário de trabalho</h2>
-            <label for="horario-entrada">Entrada:</label>
-            <input type="time" id="horario-entrada" value="14:50">
-            <label for="horario-saida">Saída:</label>
-            <input type="time" id="horario-saida" value="21:30">
 
-            <!-- Adicionando campos de pausa -->
-            <label for="pausa-inicio">Início da Pausa:</label>
-            <input type="time" id="pausa-inicio" value="16:00">
-
-            <label for="pausa-fim">Fim da Pausa:</label>
-            <input type="time" id="pausa-fim" value="16:30">
-        </section>
-
-
-        <!-- Seletor de meses e anos -->
-        <div class="centraliza">
-            <div id="seletor-mes">
-                <label for="anos">Ano:</label>
-                <select id="anos"></select>
-                <label for="meses">Mês:</label>
-                <select id="meses"></select>
-            </div>
+<!-- ═══════════════════════════ HEADER ═══════════════════════════════════ -->
+<header>
+    <div class="header-inner">
+        <img id="header-mascote" src="img/sapo-neutro.jpg" alt="Mascote" class="header-mascote">
+        <div class="header-text">
+            <h1 id="titulo-principal">🐸 Controle de Ponto 🐸</h1>
+            <p>Registre seus horários com carinho!</p>
         </div>
+    </div>
+    <nav class="menu-nav">
+        <button class="nav-pill active" data-secao="controle" onclick="mostrarSecao('controle')">📋 Controle</button>
+        <button class="nav-pill" data-secao="jogos"    onclick="mostrarSecao('jogos')">🎮 Jogos</button>
+        <button class="nav-pill" data-secao="quiz"     onclick="mostrarSecao('quiz')">📚 Quiz</button>
+        <button class="nav-pill" data-secao="loja"     onclick="mostrarSecao('loja')">🎨 Temas</button>
+    </nav>
+</header>
 
 
-        <!-- Tabela de controle -->
+<!-- ═══════════════════════ CONTROLE DE PONTO ════════════════════════════ -->
+<main id="controle">
+
+    <!-- Config de escala (accordion) -->
+    <details id="config-accordion" class="config-card">
+        <summary class="config-summary">
+            <span class="config-summary-icon">⏰</span>
+            <div class="config-summary-text">
+                <span class="config-label">Escala de Trabalho</span>
+                <span id="config-resumo">Carregando...</span>
+            </div>
+            <span class="config-chevron">▾</span>
+        </summary>
+        <div class="config-body">
+            <div id="escala-grid" class="escala-grid"></div>
+        </div>
+    </details>
+
+    <!-- Seletor mês/ano -->
+    <div class="mes-selector-card">
+        <div class="mes-selector-inner">
+            <label for="anos">Ano</label>
+            <select id="anos"></select>
+            <label for="meses">Mês</label>
+            <select id="meses"></select>
+        </div>
+    </div>
+
+    <!-- Tabela de pontos -->
+    <div class="tabela-wrapper">
         <table id="tabela-ponto">
             <thead>
                 <tr>
                     <th>Dia</th>
                     <th>Entrada</th>
-                    <th>Pausa (Início)</th>
-                    <th>Pausa (Fim)</th>
+                    <th>Almoço (início)</th>
+                    <th>Almoço (fim)</th>
                     <th>Saída</th>
-                    <th>Total (horas)</th>
+                    <th>Total</th>
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Linhas serão geradas dinamicamente -->
-            </tbody>
+            <tbody></tbody>
         </table>
+    </div>
 
-        <!-- Sapo interativo -->
-        <section id="sapo-status">
-            <h2>🐸 Status do Sapinho</h2>
-            <img id="sapo-img" src="img/cinnamoroll-neutro.png" alt="Cinnamonroll neutro">
-            <p id="sapo-mensagem">O sapinho está neutro. Vamos fazer progressos! 💼</p>
-        </section>
-
-        <div class="centraliza" style="margin-bottom: 20px;">
-            <button class="button button-danger" id="clearButton">Limpar Dados</button>
+    <!-- Status do mascote -->
+    <section id="sapo-status">
+        <h2>🐸 Status do Sapinho</h2>
+        <div class="mascote-wrapper">
+            <img id="sapo-img" src="img/sapo-neutro.jpg" alt="Status do mascote">
         </div>
-
-
-        <!-- Modal -->
-        <div id="myModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <span class="frog neutral-frog">🐸</span>
-                    <h2>Tem certeza que deseja limpar os dados?</h2>
-                </div>
-                <div class="modal-footer">
-                    <button class="button button-cancel" id="cancelButton">Cancelar</button>
-                    <button class="button button-confirm" id="confirmButton">Sim, limpar</button>
-                </div>
-            </div>
-        </div>
-    </main>
-
-
-    <!-- Seção de Jogos -->
-    <section id="jogos" class="secao-jogos" style="display: none;">
-        <h2>🎮 Jogos dos Sapinhos 🎮</h2>
-        <nav>
-            <button class="button" onclick="mostrarJogo('velha')">Jogo da Velha</button>
-            <button class="button" onclick="mostrarJogo('forca')">Forca Aquática</button>
-            <button class="button" onclick="mostrarJogo('salto')">Salto do Sapinho</button>
-            <button class="button" onclick="mostrarJogo('memoria')">Memória dos Sapinhos</button>
-        </nav>
-
-        <div class="jogos-container">
-            <div id="velha" class="jogo">
-                <h2>Jogo da Velha 🐸</h2>
-                <label for="velha-difficulty">Dificuldade:</label>
-                <select id="velha-difficulty">
-                    <option value="easy">Difícil</option>
-                    <option value="medium">Médio</option>
-                    <option value="hard">Fácil</option>
-                </select>
-                <div class="tabuleiro" id="tabuleiro"></div>
-                <p id="mensagemVelha"></p>
-                <button class="button" onclick="reiniciarJogoVelha()">Reiniciar</button>
-            </div>
-
-
-            <div id="forca" class="jogo">
-                <h2>Forca Aquática 🌊</h2>
-                <label for="forca-difficulty">Dificuldade:</label>
-                <select id="forca-difficulty">
-                    <option value="easy">Fácil</option>
-                    <option value="medium" selected>Médio</option>
-                    <option value="hard">Difícil</option>
-                </select>
-                <p id="palavra"></p>
-                <input type="text" id="entrada" maxlength="1">
-                <button onclick="tentarLetra()">Tentar</button>
-                <p id="dica"></p>
-                <p id="tentativas"></p>
-                <button class="button" onclick="reiniciarForca()">Reiniciar</button>
-            </div>
-
-            <!-- Seção Salto do Sapinho -->
-            <div id="salto" class="jogo">
-                <h2>Salto do Sapinho 🐸</h2>
-                <label for="salto-difficulty">Dificuldade:</label>
-                <select id="salto-difficulty">
-                    <option value="easy">Fácil</option>
-                    <option value="medium" selected>Médio</option>
-                    <option value="hard">Difícil</option>
-                </select>
-                <canvas id="gameCanvas" width="400" height="200"></canvas>
-                <button class="button" onclick="reiniciarSalto()">Reiniciar</button>
-            </div>
-
-            <!-- Seção Memória dos Sapinhos -->
-            <div id="memoria" class="jogo">
-                <h2>Memória dos Sapinhos 🧠</h2>
-                <label for="memoria-difficulty">Dificuldade:</label>
-                <select id="memoria-difficulty">
-                    <option value="easy">Fácil</option>
-                    <option value="medium" selected>Médio</option>
-                    <option value="hard">Difícil</option>
-                </select>
-                <div id="memoria-grid"></div>
-                <button onclick="reiniciarMemoria()">Reiniciar</button>
-            </div>
-
+        <div class="mascote-balao">
+            <p id="sapo-mensagem">Sapinho neutro. Sem registros ainda. 💼</p>
         </div>
     </section>
 
+    <!-- Limpar dados -->
+    <div class="centraliza" style="margin: 20px 0 8px;">
+        <button class="button button-danger" id="clearButton">🗑 Limpar mês</button>
+    </div>
 
-    <section id="quiz" class="secao-quiz" style="display: none;">
-        <div class="score-container">
-            🏆 Acertos: <span id="correct-count">0</span> | ❌ Erros: <span id="wrong-count">0</span>
+    <!-- Modal de confirmação -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="frog">🐸</span>
+                <h2>Tem certeza que deseja limpar os dados deste mês?</h2>
+            </div>
+            <div class="modal-footer">
+                <button class="button button-cancel" id="cancelButton">Cancelar</button>
+                <button class="button button-confirm" id="confirmButton">✓ Limpar</button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+
+<!-- ═══════════════════════════ JOGOS ════════════════════════════════════ -->
+<section id="jogos" class="secao-jogos" style="display:none;">
+    <h2>🎮 Jogos dos Sapinhos</h2>
+    <nav>
+        <button class="button" onclick="mostrarJogo('velha')">Jogo da Velha</button>
+        <button class="button" onclick="mostrarJogo('forca')">Forca Aquática</button>
+        <button class="button" onclick="mostrarJogo('salto')">Salto do Sapinho</button>
+        <button class="button" onclick="mostrarJogo('memoria')">Memória</button>
+    </nav>
+
+    <div class="jogos-container">
+        <div id="velha" class="jogo">
+            <h2>Jogo da Velha 🐸</h2>
+            <label for="velha-difficulty">Dificuldade:</label>
+            <select id="velha-difficulty">
+                <option value="easy">Difícil</option>
+                <option value="medium">Médio</option>
+                <option value="hard">Fácil</option>
+            </select>
+            <div class="tabuleiro" id="tabuleiro"></div>
+            <p id="mensagemVelha"></p>
+            <button class="button" onclick="reiniciarJogoVelha()">Reiniciar</button>
         </div>
 
-        <h2>📚 Quiz dos Sapinhos 🐸</h2>
-        <div class="quiz-selector">
-            <div class="quiz-tab active" onclick="carregarQuiz('quiz1')">Geopolítica Básica</div>
-            <div class="quiz-tab" onclick="carregarQuiz('quiz2')">Relações Internacionais</div>
+        <div id="forca" class="jogo">
+            <h2>Forca Aquática 🌊</h2>
+            <label for="forca-difficulty">Dificuldade:</label>
+            <select id="forca-difficulty">
+                <option value="easy">Fácil</option>
+                <option value="medium" selected>Médio</option>
+                <option value="hard">Difícil</option>
+            </select>
+            <p id="palavra"></p>
+            <input type="text" id="entrada" maxlength="1">
+            <button onclick="tentarLetra()">Tentar</button>
+            <p id="dica"></p>
+            <p id="tentativas"></p>
+            <button class="button" onclick="reiniciarForca()">Reiniciar</button>
         </div>
-        <div id="quiz-container"></div>
+
+        <div id="salto" class="jogo">
+            <h2>Salto do Sapinho 🐸</h2>
+            <label for="salto-difficulty">Dificuldade:</label>
+            <select id="salto-difficulty">
+                <option value="easy">Fácil</option>
+                <option value="medium" selected>Médio</option>
+                <option value="hard">Difícil</option>
+            </select>
+            <canvas id="gameCanvas" width="400" height="200"></canvas>
+            <button class="button" onclick="reiniciarSalto()">Reiniciar</button>
+        </div>
+
+        <div id="memoria" class="jogo">
+            <h2>Memória dos Sapinhos 🧠</h2>
+            <label for="memoria-difficulty">Dificuldade:</label>
+            <select id="memoria-difficulty">
+                <option value="easy">Fácil</option>
+                <option value="medium" selected>Médio</option>
+                <option value="hard">Difícil</option>
+            </select>
+            <div id="memoria-grid"></div>
+            <button class="button" onclick="reiniciarMemoria()">Reiniciar</button>
+        </div>
+    </div>
+</section>
+
+
+<!-- ═══════════════════════════ QUIZ ═════════════════════════════════════ -->
+<section id="quiz" class="secao-quiz" style="display:none;">
+    <div class="score-container">
+        🏆 Acertos: <span id="correct-count">0</span> | ❌ Erros: <span id="wrong-count">0</span>
+    </div>
+    <h2>📚 Quiz dos Sapinhos</h2>
+    <div class="quiz-selector">
+        <div class="quiz-tab active" onclick="carregarQuiz('quiz1')">Geopolítica Básica</div>
+        <div class="quiz-tab"       onclick="carregarQuiz('quiz2')">Relações Internacionais</div>
+    </div>
+    <div id="quiz-container"></div>
+    <div class="centraliza" style="margin-top:20px;">
         <button class="button" onclick="reiniciarQuiz()">Reiniciar Quiz</button>
-    </section>
+    </div>
+</section>
 
-    <!-- Nova seção de Loja de Temas -->
-    <section id="loja" class="secao-loja" style="display: none;">
-        <h2>🛍️ Loja de Temas 🛍️</h2>
-        <p class="loja-descricao">Personalize seu controle de ponto com temas especiais!</p>
 
-        <div class="temas-container">
-            <div class="tema-card" data-tema="padrao">
-                <img src="img/temas/tema-padrao.png" alt="Tema Padrão">
-                <h3>Tema Padrão</h3>
-                <p>O clássico tema dos sapinhos</p>
-                <button class="button tema-ativo" onclick="aplicarTema('padrao')">Ativo</button>
-            </div>
+<!-- ═══════════════════════════ LOJA ═════════════════════════════════════ -->
+<section id="loja" class="secao-loja" style="display:none;">
+    <h2>🎨 Loja de Temas</h2>
+    <p class="loja-descricao">Personalize seu controle de ponto com um tema especial!</p>
 
-            <div class="tema-card" data-tema="cinnamoroll">
-                <img src="img/temas/tema-cinnamoroll.png" alt="Tema Cinnamoroll">
-                <h3>Tema Cinnamoroll</h3>
-                <p>Doce e fofo como o céu azul</p>
-                <button class="button" onclick="aplicarTema('cinnamoroll')">Aplicar</button>
-            </div>
-
-            <div class="tema-card" data-tema="pompompurin">
-                <img src="img/temas/tema-pompompurin.png" alt="Tema Pompompurin">
-                <h3>Tema Pompompurin</h3>
-                <p>Amarelo e adorável como pudim</p>
-                <button class="button" onclick="aplicarTema('pompompurin')">Aplicar</button>
-            </div>
+    <div class="temas-container">
+        <div class="tema-card" data-tema="padrao">
+            <img src="img/temas/tema-padrao.png" alt="Tema Padrão">
+            <h3>🐸 Tema Sapo</h3>
+            <p>O clássico verde do lago</p>
+            <div class="tema-swatches"></div>
+            <button class="button tema-ativo" onclick="aplicarTema('padrao')">Ativo</button>
         </div>
-    </section>
 
-    <footer>
-        <p>🌿 Feito com carinho por sapinhos no lago 🌿</p>
-    </footer>
+        <div class="tema-card" data-tema="cinnamoroll">
+            <img src="img/temas/tema-cinnamoroll.png" alt="Tema Cinnamoroll">
+            <h3>☁️ Cinnamoroll</h3>
+            <p>Azul céu, suave e fofo</p>
+            <div class="tema-swatches"></div>
+            <button class="button" onclick="aplicarTema('cinnamoroll')">Aplicar</button>
+        </div>
 
-    <script src="script/script.js"></script>
-    <script src="script/script-game-refactored.js"></script>
-    <script src="script/script-quiz.js"></script>
-    <script src="script/script-loja.js"></script>
+        <div class="tema-card" data-tema="pompompurin">
+            <img src="img/temas/tema-pompompurin.png" alt="Tema Pompompurin">
+            <h3>🍮 Pompompurin</h3>
+            <p>Caramelo dourado e quentinho</p>
+            <div class="tema-swatches"></div>
+            <button class="button" onclick="aplicarTema('pompompurin')">Aplicar</button>
+        </div>
+    </div>
+</section>
+
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════════════ -->
+<footer>
+    <p>🐸 Feito com carinho 🐸</p>
+</footer>
+
+
+<!-- ═══════════════════════════ SCRIPTS ══════════════════════════════════ -->
+<script src="script/script-escala.js"></script>
+<script src="script/script.js"></script>
+<script src="script/script-game-refactored.js"></script>
+<script src="script/script-quiz.js"></script>
+<script src="script/script-loja.js"></script>
+
 </body>
-
 </html>
