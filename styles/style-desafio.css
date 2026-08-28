@@ -3,7 +3,8 @@
 .secao-desafio {
     max-width: 680px;
     margin: 0 auto;
-    padding: 0 16px 40px;
+    padding: 24px 20px 60px;
+    display: block; /* garante visibilidade quando JS seta display:block */
 }
 
 .secao-desafio h2 { margin-bottom: 20px; }
