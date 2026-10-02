@@ -258,8 +258,7 @@ function atualizarStatusSapo(dia, registro, date) {
     if (!imgSapo || !msgSapo) return;
 
     const tema   = localStorage.getItem('tema-atual') || 'padrao';
-    const cfg    = { padrao: ['sapo','Sapinho','jpg'], cinnamoroll: ['cinnamoroll','Cinnamoroll','png'], pompompurin: ['pompompurin','Pompompurin','png'] };
-    const [pfx, nome, ext] = cfg[tema] || cfg.padrao;
+    const nome   = (TEMAS_CONFIG[tema] || TEMAS_CONFIG.padrao).nome;
 
     const totalMin  = calcularMinutos(registro);
     const forceWork = totalMin !== null && typeof diaEFolga === 'function' && diaEFolga(date);
@@ -286,7 +285,8 @@ function atualizarStatusSapo(dia, registro, date) {
         msg = `${nome} neutro. Sem registros ainda. 💼`;
     }
 
-    imgSapo.src = `img/${pfx}-${estado}.${ext}`;
+    imgSapo.dataset.estado = estado;
+    imgSapo.src = imagemMascote(tema, estado);
     imgSapo.classList.add('mascote-troca');
     imgSapo.addEventListener('animationend', () => imgSapo.classList.remove('mascote-troca'), { once: true });
     msgSapo.textContent = msg;

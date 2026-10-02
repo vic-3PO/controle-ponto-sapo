@@ -122,55 +122,44 @@
     box-shadow: 0 0 0 3px rgba(91,173,111,0.14);
 }
 
-/* ── 1. RANGE VERTICAL ───────────────────────────────────────────────────── */
+/* ── 1. VOLUME (parece vertical, arrasta pro lado) ───────────────────────── */
 .volume-widget {
+    position: relative;
     display: flex;
-    align-items: flex-end;
-    gap: 12px;
-    margin-top: 4px;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    width: 100%;
+    max-width: 320px;
+    height: 160px;
 }
+
+.volume-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.volume-seta { font-size: .7rem; color: var(--primaria); line-height: 1; }
+.volume-icone { font-size: .9rem; line-height: 1; }
 
 .volume-track {
-    width: 32px;
-    height: 140px;
+    width: 34px;
+    height: 110px;
     position: relative;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: 10px;
     background: var(--fundo-2);
     border: 2px solid var(--borda);
-    flex-shrink: 0;
 }
 
-.volume-track input[type="range"] {
-    width: 140px;
-    height: 28px;
+.volume-fill {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-90deg);
-    margin: 0;
-    padding: 0;
-    cursor: ns-resize;
-    background: transparent;
-    appearance: none;
-    -webkit-appearance: none;
-}
-
-.volume-track input[type="range"]::-webkit-slider-runnable-track {
-    height: 6px;
-    background: var(--borda);
-    border-radius: 3px;
-}
-
-.volume-track input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
+    left: 0; right: 0; bottom: 0;
+    height: 50%;
     background: var(--primaria);
-    border: 2px solid #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    margin-top: -6px;
+    border-radius: 0 0 8px 8px;
 }
 
 .volume-val {
@@ -180,36 +169,51 @@
     color: var(--primaria-esc);
 }
 
-/* ── 2. CAMPO INVISÍVEL ──────────────────────────────────────────────────── */
-.toggle-visivel-span {
+/* input real: horizontal, invisível, cobre o widget inteiro */
+.volume-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
     cursor: pointer;
-    color: var(--primaria);
+}
+
+/* ── 2. CAMPO INVISÍVEL ──────────────────────────────────────────────────── */
+.texto-editavel {
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0;
+    margin-left: 4px;
+    font: inherit;
     font-weight: 700;
-    font-size: 0.78rem;
-    text-decoration: underline;
-    margin-left: 6px;
-    user-select: none;
+    color: var(--primaria);
+    min-width: 4ch;
+    box-shadow: none;
 }
 
 .campo-invisivel-input {
     width: 100%;
     padding: 9px 14px;
-    border: 2px dashed var(--borda);
+    border: 2px solid transparent;
     border-radius: var(--radius-input);
-    background: var(--fundo);
+    background: transparent;
     color: transparent;
-    caret-color: var(--primaria);
+    caret-color: transparent;
     font-family: 'Nunito', sans-serif;
     font-size: 0.92rem;
     font-weight: 600;
     box-sizing: border-box;
-    transition: color 0.4s, border 0.3s;
+    transition: color 0.4s, border 0.3s, background 0.3s;
 }
 
 .campo-invisivel-input.visivel {
     color: var(--texto);
-    border-style: solid;
+    background: var(--fundo);
     border-color: var(--primaria);
+    caret-color: var(--primaria);
 }
 
 .campo-invisivel-input:focus { outline: none; }
@@ -302,19 +306,46 @@
     flex-shrink: 0;
 }
 
-/* ── 5. CHECKBOX FUGITIVO ────────────────────────────────────────────────── */
-#label-fugitivo {
-    display: inline-flex;
+/* ── 4b. OPÇÕES DA FRASE ─────────────────────────────────────────────────── */
+.opcoes-frase { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.opcao-frase {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: .85rem;
+    padding: 8px 16px;
+    border: 2px solid var(--borda);
+    border-radius: 20px;
+    background: var(--fundo);
+    color: var(--texto);
     cursor: pointer;
-    user-select: none;
-    transition: transform 0.08s;
 }
 
-.fugitivo-tentativas {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--texto-muted);
-    font-style: italic;
+.opcao-frase:hover { border-color: var(--primaria); }
+.opcao-frase.escolhida { background: var(--primaria); border-color: var(--primaria); color: #fff; }
+
+/* ── 5. CHECKBOX FUGITIVO ────────────────────────────────────────────────── */
+.fugitivo-area {
+    position: relative;
+    height: 110px;
+    margin-top: 8px;
+    border: 2px dashed var(--borda);
+    border-radius: 12px;
+}
+
+#label-fugitivo {
+    position: absolute;
+    left: 14px;
+    top: 36px;
+    display: inline-flex;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    background: var(--superficie);
+    padding: 6px 12px;
+    border-radius: 30px;
+    border: 2px solid var(--primaria);
+    transition: left .12s, top .12s;
 }
 
 /* ── 6. CAMPO ESPELHADO ──────────────────────────────────────────────────── */
@@ -328,38 +359,50 @@
     unicode-bidi: bidi-override;
 }
 
-/* ── 7. SLIDER CAPTCHA ───────────────────────────────────────────────────── */
-.captcha-alvo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 6px;
+/* ── 7. BOLINHA COM GRAVIDADE ────────────────────────────────────────────── */
+.grav-stage {
+    position: relative;
+    height: 140px;
+    margin-top: 6px;
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
 }
 
-.captcha-alvo-label {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: var(--texto-muted);
+.grav-bar {
+    position: absolute;
+    left: 6%;
+    width: 88%;
+    top: 85px;
+    height: 10px;
+    border-radius: 5px;
+    background: var(--borda);
+    border: 2px solid var(--primaria);
+    box-sizing: border-box;
+    transform-origin: 50% 50%;
 }
 
-.captcha-alvo-seta {
-    font-size: 0.8rem;
-    color: var(--erro, #c62828);
-    font-weight: 900;
+.grav-marca {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 2px;
+    height: 12px;
+    margin-left: -1px;
+    background: var(--texto-muted);
 }
 
-input#captcha-slider {
-    width: 100%;
-    cursor: ew-resize;
-    accent-color: var(--primaria);
-}
-
-.impossivel-feedback {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: var(--erro, #c62828);
-    min-height: 1.2em;
-    margin: 2px 0 0;
+.grav-ball {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 24px;
+    height: 24px;
+    margin-left: -12px;
+    border-radius: 50%;
+    background: var(--primaria);
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
 }
 
 /* ── DRAMA APAGADO ───────────────────────────────────────────────────────── */

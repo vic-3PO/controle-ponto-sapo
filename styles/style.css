@@ -72,6 +72,33 @@ body.tema-pompompurin {
     --sombra-btn:   0 3px 10px rgba(212,160,23,0.32);
 }
 
+/* ── Tema Halloween ──────────────────────────────────────────────────────── */
+body.tema-halloween {
+    --primaria:     #E8650D;
+    --primaria-esc: #FF9A3D;
+    --secundaria:   #7B4FBF;
+    --fundo:        #14101F;
+    --fundo-2:      #221A36;
+    --superficie:   #1C1629;
+    --texto:        #F3EAD8;
+    --texto-muted:  #B7A8D0;
+    --borda:        #3A2D57;
+    --sombra-sm:    0 2px 8px  rgba(0,0,0,0.35);
+    --sombra-card:  0 4px 22px rgba(0,0,0,0.40);
+    --sombra-hover: 0 8px 30px rgba(232,101,13,0.28);
+    --sombra-btn:   0 3px 10px rgba(232,101,13,0.35);
+
+    --sucesso:        #4CC27A;
+    --sucesso-bg:     #12301F;
+    --sucesso-borda:  #2F7A4D;
+    --erro:           #FF5C5C;
+    --erro-bg:        #3A1620;
+    --erro-borda:     #8A3040;
+    --info:           #8DB8FF;
+    --info-bg:        #172640;
+    --info-borda:     #3A5E96;
+}
+
 /* ── Reset ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

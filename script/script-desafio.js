@@ -1,83 +1,100 @@
 // ─── Formulário Impossível ────────────────────────────────────────────────────
 
+const TEMPO_PERGUNTA = 30;
+
 // ─── TERMOS: ir para formulário ───────────────────────────────────────────────
 
 function irParaFormulario() {
+    const cb = document.getElementById('cb-termos');
+    if (cb && !cb.checked) return; // aparência de habilitado, mas não faz nada
     document.getElementById('desafio-termos').style.display = 'none';
     document.getElementById('desafio-form').style.display   = 'block';
     iniciarTimerPergunta();
 }
 
-// Mostrar aviso quando checkbox de termos muda
 document.addEventListener('DOMContentLoaded', () => {
-    const cbTermos = document.getElementById('cb-termos');
-    const aviso    = document.getElementById('aviso-termos');
-    if (cbTermos && aviso) {
+    // Garante navegação para o desafio mesmo com script.js antigo em cache
+    const btnDesafio = document.querySelector('[data-secao="desafio"]');
+    if (btnDesafio) {
+        btnDesafio.addEventListener('click', () => {
+            ['controle','jogos','quiz','loja'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            const s = document.getElementById('desafio');
+            if (s) s.style.display = 'block';
+            document.querySelectorAll('.nav-pill').forEach(p => {
+                p.classList.toggle('active', p.dataset.secao === 'desafio');
+            });
+        });
+    }
+
+    // Pegadinha: marcada, o botão PARECE desabilitado mas funciona.
+    // Desmarcada, o botão PARECE habilitado mas não funciona.
+    const cbTermos  = document.getElementById('cb-termos');
+    const aviso     = document.getElementById('aviso-termos');
+    const btnTermos = document.getElementById('btn-termos');
+    if (cbTermos && btnTermos) {
         const atualizar = () => {
-            aviso.textContent = cbTermos.checked
-                ? '⚠️ Marcou que leu. Sabemos que é mentira.'
-                : '📖 Desmarcou. Honestidade admirável (mas o botão funciona do mesmo jeito).';
-            aviso.classList.add('visivel');
+            btnTermos.classList.toggle('btn-fake-disabled', cbTermos.checked);
+            if (aviso) {
+                aviso.textContent = cbTermos.checked ? '⚠️ Marcou que leu. Sabemos que é mentira.' : '';
+                aviso.classList.toggle('visivel', cbTermos.checked);
+            }
         };
         cbTermos.addEventListener('change', atualizar);
-        atualizar(); // estado inicial
+        atualizar();
     }
 
-    // 1. Range vertical
+    iniciarVolume();
+    iniciarCampoInvisivel();
+    iniciarOpcoesFrase();
+    iniciarFugitivo();
+    iniciarGravidade();
+});
+
+// ─── 1. VOLUME (parece vertical, arrasta pro lado) ───────────────────────────
+
+function iniciarVolume() {
     const rangeEl = document.getElementById('range-comprometimento');
     const valEl   = document.getElementById('range-val');
-    if (rangeEl && valEl) {
-        rangeEl.addEventListener('input', () => { valEl.textContent = rangeEl.value + '%'; });
-    }
+    const fillEl  = document.getElementById('volume-fill');
+    if (!rangeEl) return;
+    const atualizar = () => {
+        valEl.textContent    = rangeEl.value + '%';
+        fillEl.style.height  = rangeEl.value + '%';
+    };
+    rangeEl.addEventListener('input', atualizar);
+    atualizar();
+}
 
-    // 2. Campo invisível
-    const toggleSpan = document.getElementById('toggle-visivel');
-    const campoSecr  = document.getElementById('campo-secreto');
-    if (toggleSpan && campoSecr) {
-        toggleSpan.addEventListener('click', () => {
-            const vis = campoSecr.classList.toggle('visivel');
-            toggleSpan.textContent = vis ? '(campo visível ✓)' : '(campo invisível)';
-        });
-    }
+// ─── 2. CAMPO INVISÍVEL: apague o "in" de "invisível" ────────────────────────
 
-    // 5. Checkbox fugitivo
-    iniciarFugitivo();
+function iniciarCampoInvisivel() {
+    const rotulo = document.getElementById('toggle-visivel');
+    const campo  = document.getElementById('campo-secreto');
+    if (!rotulo || !campo) return;
 
-    // 7. Slider CAPTCHA
-    const slider  = document.getElementById('captcha-slider');
-    const captVal = document.getElementById('captcha-val');
-    const captFb  = document.getElementById('captcha-feedback');
-    if (slider) {
-        slider.addEventListener('input', () => {
-            const v = parseInt(slider.value);
-            if (captVal) captVal.textContent = v;
-            if (captFb) {
-                if (v === 0) {
-                    captFb.textContent = '';
-                } else if (v === 48) {
-                    captFb.textContent = '❌ Quase! Só mais um pouquinho...';
-                } else if (v === 51) {
-                    captFb.textContent = '❌ Passou! Volta um pouquinho...';
-                } else if (v === 50) {
-                    // 50 nunca é atingível com step=3, mas por segurança
-                    captFb.textContent = '✓ Perfeito!';
-                } else {
-                    captFb.textContent = '❌ Precisa ser exatamente 50%.';
-                }
-            }
-        });
-    }
-});
+    const ajustar = () => {
+        rotulo.style.width = (rotulo.value.length + 1) + 'ch';
+        const txt = rotulo.value.toLowerCase();
+        const visivel = txt.includes('visível') && !txt.includes('invisível');
+        campo.classList.toggle('visivel', visivel);
+        if (!visivel) campo.blur();
+    };
+    rotulo.addEventListener('input', ajustar);
+    ajustar();
+}
 
 // ─── 3. BOTÃO 4× CONFIRMAÇÃO ─────────────────────────────────────────────────
 
 let confirmaStep = 0;
 
 const PERGUNTAS_CONFIRMA = [
-    { txt: 'Tem certeza que você é humano?',           step: '1 / 4' },
-    { txt: 'Tem MESMO certeza?',                       step: '2 / 4' },
-    { txt: 'Pensa bem antes de responder...',           step: '3 / 4' },
-    { txt: 'DEFINITIVAMENTE última chance.',            step: '4 / 4' },
+    { txt: 'Tem certeza que você é humano?',  step: '1 / 4' },
+    { txt: 'Tem MESMO certeza?',              step: '2 / 4' },
+    { txt: 'Pensa bem antes de responder...', step: '3 / 4' },
+    { txt: 'DEFINITIVAMENTE última chance.',  step: '4 / 4' },
 ];
 
 function abrirConfirmacao() {
@@ -86,48 +103,40 @@ function abrirConfirmacao() {
     document.getElementById('confirm-overlay').classList.add('aberto');
 }
 
+function fecharConfirmacao() {
+    document.getElementById('confirm-overlay').classList.remove('aberto');
+}
+
 function mostrarConfirmaStep() {
-    const p    = PERGUNTAS_CONFIRMA[confirmaStep];
-    const st   = document.getElementById('confirm-step-label');
-    const txt  = document.getElementById('confirm-pergunta');
-    const sim  = document.getElementById('confirm-sim');
-    const nao  = document.getElementById('confirm-nao');
+    const p   = PERGUNTAS_CONFIRMA[confirmaStep];
+    const sim = document.getElementById('confirm-sim');
+    const nao = document.getElementById('confirm-nao');
 
-    if (st)  st.textContent  = `Etapa ${p.step}`;
-    if (txt) txt.textContent = p.txt;
+    document.getElementById('confirm-step-label').textContent = `Etapa ${p.step}`;
+    document.getElementById('confirm-pergunta').textContent   = p.txt;
 
+    // Os dois botões têm sempre a mesma cor
     if (confirmaStep < 3) {
-        // Ordem normal: Sim | Não
         sim.textContent = '✓ Sim, sou humano';
         nao.textContent = '✗ Não tenho certeza';
-        sim.className = 'button';
-        nao.className = 'button button-danger';
-
         sim.onclick = () => { confirmaStep++; mostrarConfirmaStep(); };
         nao.onclick = () => {
-            document.getElementById('confirm-overlay').classList.remove('aberto');
+            fecharConfirmacao();
             confirmaStep = 0;
             setConfirmaStatus('🤔 Tudo bem! Clique de novo quando tiver certeza.', false);
         };
     } else {
-        // 4ª pergunta: TROCADO! O "Sim" agora diz "Não" e o "Não" diz "Sim"
-        // A ordem visual é a mesma (sim no lugar esquerdo, nao no direito)
-        // mas os textos e comportamentos estão invertidos
-        sim.textContent = '✗ Não, não sou humano'; // onde era "Sim", agora diz "Não"
-        nao.textContent = '✓ Sim, definitivamente!'; // onde era "Não", agora diz "Sim"
-        sim.className = 'button button-danger';
-        nao.className = 'button';
-
-        // Quem clica no botão da esquerda (onde sempre estava "Sim") agora está clicando "Não"
+        // 4ª pergunta: textos trocados, posição e cor iguais
+        sim.textContent = '✗ Não, não sou humano';
+        nao.textContent = '✓ Sim, definitivamente!';
         sim.onclick = () => {
-            document.getElementById('confirm-overlay').classList.remove('aberto');
+            fecharConfirmacao();
             confirmaStep = 0;
             setConfirmaStatus('😈 Você clicou em "Não, não sou humano". Recomece do zero!', false);
         };
-        // Quem percebe a troca e clica no botão da direita (onde era "Não") agora acerta
         nao.onclick = () => {
-            document.getElementById('confirm-overlay').classList.remove('aberto');
-            setConfirmaStatus('✅ Humanidade confirmada! (mas clicou no botão da direita... suspeito)', true);
+            fecharConfirmacao();
+            setConfirmaStatus('✅ Humanidade confirmada!', true);
         };
     }
 }
@@ -135,42 +144,40 @@ function mostrarConfirmaStep() {
 function setConfirmaStatus(msg, ok) {
     const el = document.getElementById('confirma-status');
     if (!el) return;
-    el.textContent    = msg;
-    el.dataset.ok     = ok ? '1' : '0';
-    el.style.color    = ok ? 'var(--sucesso, green)' : 'var(--erro, #c62828)';
+    el.textContent = msg;
+    el.style.color = ok ? 'var(--sucesso, green)' : 'var(--erro, #c62828)';
 }
 
-// ─── 4. TIMER ─────────────────────────────────────────────────────────────────
+// ─── 4. FRASE COM TIMER ──────────────────────────────────────────────────────
 
-let timerInterval  = null;
-let timerSegundos  = 30;
+let timerInterval = null;
+let timerSegundos = TEMPO_PERGUNTA;
+
+function iniciarOpcoesFrase() {
+    document.querySelectorAll('#opcoes-frase .opcao-frase').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.dataset.ok !== '1') {
+                dispararDrama('Resposta errada.');
+                return;
+            }
+            document.querySelectorAll('#opcoes-frase .opcao-frase')
+                .forEach(b => b.classList.toggle('escolhida', b === btn));
+            clearInterval(timerInterval);
+        });
+    });
+}
 
 function iniciarTimerPergunta() {
     clearInterval(timerInterval);
-    timerSegundos = 30;
+    timerSegundos = TEMPO_PERGUNTA;
     _atualizarTimerUI();
 
     timerInterval = setInterval(() => {
+        const sec = document.getElementById('desafio');
+        if (!sec || sec.style.display === 'none') return; // pausa fora da aba
         timerSegundos--;
         _atualizarTimerUI();
-        if (timerSegundos <= 0) {
-            clearInterval(timerInterval);
-            dispararDrama();
-        }
-    }, 1000);
-}
-
-function resetarTimer() {
-    timerSegundos = 30;
-    clearInterval(timerInterval);
-    _atualizarTimerUI();
-    timerInterval = setInterval(() => {
-        timerSegundos--;
-        _atualizarTimerUI();
-        if (timerSegundos <= 0) {
-            clearInterval(timerInterval);
-            dispararDrama();
-        }
+        if (timerSegundos <= 0) dispararDrama('Você demorou demais para responder.');
     }, 1000);
 }
 
@@ -179,80 +186,160 @@ function _atualizarTimerUI() {
     const fill = document.getElementById('timer-fill');
     if (num)  num.textContent = timerSegundos;
     if (fill) {
-        fill.style.width = (timerSegundos / 30 * 100) + '%';
+        fill.style.width = (timerSegundos / TEMPO_PERGUNTA * 100) + '%';
         fill.classList.toggle('urgente', timerSegundos <= 10);
     }
 }
 
-function dispararDrama() {
-    // Salva valores atuais dos inputs
-    const inputs = document.querySelectorAll('#desafio-form input[type="text"], #desafio-form textarea');
-    const backup = Array.from(inputs).map(i => i.value);
-
-    // "Apaga" tudo
-    inputs.forEach(i => { i.value = ''; });
+// Apaga o formulário inteiro e volta para os termos
+function dispararDrama(motivo) {
+    clearInterval(timerInterval);
+    fecharConfirmacao();
+    resetarFormulario();
 
     const drama = document.getElementById('drama-apagado');
-    if (drama) drama.style.display = 'flex';
-
-    setTimeout(() => {
-        if (drama) drama.style.display = 'none';
-        // Restaura tudo
-        inputs.forEach((i, idx) => { i.value = backup[idx]; });
-        resetarTimer();
-    }, 3000);
+    document.getElementById('drama-motivo').textContent = motivo;
+    drama.style.display = 'flex';
+    setTimeout(() => { drama.style.display = 'none'; }, 2800);
 }
 
-// ─── 5. CHECKBOX FUGITIVO ─────────────────────────────────────────────────────
+function resetarFormulario() {
+    // textos
+    document.querySelectorAll('#desafio-form input[type="text"]').forEach(i => {
+        i.value = i.id === 'toggle-visivel' ? '(campo invisível)' : '';
+    });
+    document.getElementById('toggle-visivel').dispatchEvent(new Event('input'));
+
+    // volume
+    const vol = document.getElementById('range-comprometimento');
+    vol.value = 50;
+    vol.dispatchEvent(new Event('input'));
+
+    // confirmação
+    confirmaStep = 0;
+    setConfirmaStatus('', false);
+
+    // frase
+    document.querySelectorAll('#opcoes-frase .opcao-frase').forEach(b => b.classList.remove('escolhida'));
+
+    // checkbox fugitivo
+    resetarFugitivo();
+
+    // bolinha
+    resetarGravidade();
+
+    // volta para os termos
+    document.getElementById('desafio-form').style.display   = 'none';
+    document.getElementById('desafio-termos').style.display = 'block';
+    timerSegundos = TEMPO_PERGUNTA;
+    _atualizarTimerUI();
+}
+
+// ─── 5. CHECKBOX FUGITIVO ────────────────────────────────────────────────────
 
 let tentativasFugitivo = 0;
+const MAX_FUGAS = 7;
 
 function iniciarFugitivo() {
+    const area     = document.getElementById('fugitivo-area');
     const label    = document.getElementById('label-fugitivo');
     const checkbox = document.getElementById('checkbox-fugitivo');
-    const contTxt  = document.getElementById('fugitivo-tentativas');
-    if (!label || !checkbox) return;
+    if (!area || !label) return;
 
-    label.addEventListener('mouseenter', () => {
-        if (checkbox.checked) return;
+    const fugir = () => {
+        if (checkbox.checked || tentativasFugitivo >= MAX_FUGAS) return;
         tentativasFugitivo++;
-        if (contTxt) {
-            const msgs = [
-                '', 'Rápida, a caixa fugiu!', 'Quase pegou!', 'Ela é esperta...',
-                'Você está tentando muito.', 'Não desiste, né?', 'Persistência admirável.',
-                'Talvez ela precise de espaço.', '...', 'Okay isso é impressionante.',
-            ];
-            contTxt.textContent = msgs[Math.min(tentativasFugitivo, msgs.length - 1)];
-        }
+        const maxX = Math.max(0, area.clientWidth  - label.offsetWidth  - 8);
+        const maxY = Math.max(0, area.clientHeight - label.offsetHeight - 8);
+        label.style.left = (4 + Math.random() * maxX) + 'px';
+        label.style.top  = (4 + Math.random() * maxY) + 'px';
+    };
+    label.addEventListener('mouseenter', fugir);
+    label.addEventListener('touchstart', fugir, { passive: true });
+}
 
-        const pad = 40;
-        const maxX = window.innerWidth  - 220 - pad;
-        const maxY = window.innerHeight - 60  - pad;
-        label.style.position = 'fixed';
-        label.style.left     = (pad + Math.random() * maxX) + 'px';
-        label.style.top      = (pad + Math.random() * maxY) + 'px';
-        label.style.zIndex   = '800';
-        label.style.background    = 'var(--superficie)';
-        label.style.padding       = '8px 14px';
-        label.style.borderRadius  = '30px';
-        label.style.border        = '2px solid var(--primaria)';
-        label.style.boxShadow     = 'var(--sombra-card)';
-    });
+function resetarFugitivo() {
+    tentativasFugitivo = 0;
+    const label = document.getElementById('label-fugitivo');
+    if (!label) return;
+    label.style.left = '';
+    label.style.top  = '';
+    document.getElementById('checkbox-fugitivo').checked = false;
+}
 
-    checkbox.addEventListener('change', () => {
-        if (checkbox.checked) {
-            // Voltou ao lugar, parou de fugir
-            label.style.position   = '';
-            label.style.left       = '';
-            label.style.top        = '';
-            label.style.zIndex     = '';
-            label.style.background = '';
-            label.style.padding    = '';
-            label.style.border     = '';
-            label.style.boxShadow  = '';
-            if (contTxt) contTxt.textContent = '🎉 Pegou! Ufa.';
-        }
+// ─── 7. BOLINHA COM GRAVIDADE ────────────────────────────────────────────────
+
+const GRAV = { pos: 0, vel: 0, inclinacao: 0, resolvido: false, noAlvo: 0, ultimo: 0, raf: null };
+const GRAV_MAX_GRAUS = 18;
+
+function iniciarGravidade() {
+    const stage = document.getElementById('grav-stage');
+    if (!stage) return;
+
+    const mover = e => {
+        const r = stage.getBoundingClientRect();
+        const t = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (r.width / 2)));
+        GRAV.inclinacao = t * GRAV_MAX_GRAUS;
+    };
+    stage.addEventListener('pointerdown', e => {
+        if (GRAV.resolvido) return;
+        stage.setPointerCapture(e.pointerId);
+        stage.style.cursor = 'grabbing';
+        mover(e);
+        stage.onpointermove = mover;
     });
+    const soltar = () => { stage.onpointermove = null; stage.style.cursor = ''; };
+    stage.addEventListener('pointerup', soltar);
+    stage.addEventListener('pointercancel', soltar);
+
+    resetarGravidade();
+    GRAV.raf = requestAnimationFrame(passoGravidade);
+}
+
+function resetarGravidade() {
+    Object.assign(GRAV, { pos: 0, vel: 0, inclinacao: 0, resolvido: false, noAlvo: 0, ultimo: 0 });
+    desenharGravidade();
+}
+
+function passoGravidade(agora) {
+    GRAV.raf = requestAnimationFrame(passoGravidade);
+
+    const form = document.getElementById('desafio-form');
+    if (!form || form.offsetParent === null) { GRAV.ultimo = 0; return; }
+
+    const dt = GRAV.ultimo ? Math.min((agora - GRAV.ultimo) / 1000, 0.05) : 0;
+    GRAV.ultimo = agora;
+    if (!dt || GRAV.resolvido) return;
+
+    const aceleracao = 260 * Math.sin(GRAV.inclinacao * Math.PI / 180); // %/s²
+    GRAV.vel += aceleracao * dt;
+    GRAV.vel *= 1 - 0.35 * dt;           // atrito leve
+    GRAV.pos += GRAV.vel * dt;
+
+    if (GRAV.pos < 0)   { GRAV.pos = 0;   GRAV.vel = -GRAV.vel * 0.45; }
+    if (GRAV.pos > 100) { GRAV.pos = 100; GRAV.vel = -GRAV.vel * 0.45; }
+
+    // precisa parar sobre o 50% por um instante
+    if (Math.abs(GRAV.pos - 50) <= 1 && Math.abs(GRAV.vel) < 2) {
+        GRAV.noAlvo += dt;
+        if (GRAV.noAlvo >= 1) {
+            GRAV.resolvido = true;
+            GRAV.pos = 50; GRAV.vel = 0; GRAV.inclinacao = 0;
+        }
+    } else {
+        GRAV.noAlvo = 0;
+    }
+    desenharGravidade();
+}
+
+function desenharGravidade() {
+    const barra = document.getElementById('grav-bar');
+    const bola  = document.getElementById('grav-ball');
+    const val   = document.getElementById('captcha-val');
+    if (!barra) return;
+    barra.style.transform = `rotate(${GRAV.inclinacao}deg)`;
+    bola.style.left       = GRAV.pos + '%';
+    val.textContent       = GRAV.pos.toFixed(1).replace('.0', '');
 }
 
 // ─── SUBMETER ─────────────────────────────────────────────────────────────────

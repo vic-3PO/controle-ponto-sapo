@@ -1,0 +1,113 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   TEMA HALLOWEEN — noite roxa, lua cheia, abóbora acesa
+   Variáveis em style.css (body.tema-halloween). Aqui: decoração e ajustes.
+   Fundo e mascotes são ilustrações (JPG); morcegos e aranha são SVGs recoloridos via filter (mask-image não funciona em file://).
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Decoração de fundo (só no tema) ────────────────────────────────────── */
+.hw-deco { display: none; }
+
+body.tema-halloween .hw-deco {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 0;            /* acima do fundo da página, abaixo do app */
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* o app fica acima da decoração */
+body.tema-halloween main,
+body.tema-halloween section,
+body.tema-halloween footer {
+    position: relative;
+    z-index: 1;
+}
+
+/* morcegos cruzando a tela */
+.hw-morcego {
+    position: absolute;
+    left: -90px;
+    opacity: 0.55;
+    filter: invert(62%) sepia(45%) saturate(1400%) hue-rotate(222deg) brightness(105%);
+    animation: hw-voo 26s linear infinite;
+}
+
+.hw-m1 { top: 14vh; width: 64px; height: 32px; animation-duration: 26s; }
+.hw-m2 { top: 38vh; width: 44px; height: 22px; animation-duration: 34s; animation-delay: -12s; }
+.hw-m3 { top: 62vh; width: 52px; height: 26px; animation-duration: 30s; animation-delay: -22s; }
+
+@keyframes hw-voo {
+    0%   { transform: translate(0, 0)        scaleY(1); }
+    25%  { transform: translate(28vw, -26px) scaleY(0.8); }
+    50%  { transform: translate(56vw, 12px)  scaleY(1); }
+    75%  { transform: translate(84vw, -22px) scaleY(0.8); }
+    100% { transform: translate(calc(100vw + 120px), 0) scaleY(1); }
+}
+
+/* aranha descendo no fio */
+.hw-fio {
+    position: absolute;
+    top: 0; right: 24vw;
+    width: 1px; height: 130px;
+    background: #6b5a8a;
+    transform-origin: top center;
+    animation: hw-fio 7s ease-in-out infinite;
+}
+
+.hw-aranha {
+    position: absolute;
+    left: -22px; bottom: -40px;
+    width: 46px; height: 46px;
+    filter: invert(75%) sepia(25%) saturate(700%) hue-rotate(230deg) brightness(105%);
+}
+
+@keyframes hw-fio {
+    0%, 100% { transform: scaleY(0.55); }
+    50%      { transform: scaleY(1); }
+}
+
+/* ── Ajustes do tema ────────────────────────────────────────────────────── */
+body.tema-halloween {
+    background:
+        linear-gradient(rgba(20,16,31,0.74), rgba(20,16,31,0.88)),
+        url('../img/halloween/fundo.jpg') center / cover fixed,
+        var(--fundo);
+}
+
+body.tema-halloween h1,
+body.tema-halloween h2 {
+    font-family: 'Creepster', 'Nunito', system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+}
+
+body.tema-halloween h1 { font-size: 2.2rem; text-shadow: 0 0 18px rgba(232,101,13,0.45); }
+
+/* mascote: moldura redonda com brilho de abóbora */
+body.tema-halloween #sapo-img,
+body.tema-halloween .header-mascote {
+    box-shadow: 0 0 18px rgba(255,138,43,0.45);
+}
+
+body.tema-halloween .button:hover      { background: #C24F06; }
+body.tema-halloween .tema-ativo        { background: #8F3A04 !important; }
+body.tema-halloween .btn-fake-disabled { filter: grayscale(0.4); }
+
+/* campos e superfícies que usam branco fixo */
+body.tema-halloween input,
+body.tema-halloween select,
+body.tema-halloween textarea {
+    color-scheme: dark;
+}
+
+@media (max-width: 700px) {
+    body.tema-halloween h1 { font-size: 1.7rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hw-morcego, .hw-fio { animation: none !important; }
+    .hw-morcego { left: 12vw; }
+    .hw-m2 { left: 55vw; }
+    .hw-m3 { left: 80vw; }
+}

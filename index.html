@@ -8,17 +8,26 @@
 
     <!-- Fonts: Nunito (kawaii-cozy) + IBM Plex Mono (horários) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Creepster&display=swap">
 
-    <link rel="stylesheet" href="styles/style.css?v=3">
-    <link rel="stylesheet" href="styles/style-game.css?v=3">
-    <link rel="stylesheet" href="styles/style-quiz.css?v=3">
-    <link rel="stylesheet" href="styles/style-loja.css?v=3">
-    <link rel="stylesheet" href="styles/temas-animacoes.css?v=3">
-    <link rel="stylesheet" href="styles/style-desafio.css?v=3">
+    <link rel="stylesheet" href="styles/style.css?v=15">
+    <link rel="stylesheet" href="styles/style-game.css?v=15">
+    <link rel="stylesheet" href="styles/style-quiz.css?v=15">
+    <link rel="stylesheet" href="styles/style-loja.css?v=15">
+    <link rel="stylesheet" href="styles/temas-animacoes.css?v=15">
+    <link rel="stylesheet" href="styles/style-desafio.css?v=15">
+    <link rel="stylesheet" href="styles/style-halloween.css?v=15">
 </head>
 
 <body>
+<!-- Decoração do tema Halloween (só aparece com body.tema-halloween) -->
+<div class="hw-deco" aria-hidden="true">
+    <img class="hw-morcego hw-m1" src="img/halloween/46771.svg" alt="">
+    <img class="hw-morcego hw-m2" src="img/halloween/2819770.svg" alt="">
+    <img class="hw-morcego hw-m3" src="img/halloween/46771.svg" alt="">
+    <span class="hw-fio"><img class="hw-aranha" src="img/halloween/3357489.svg" alt=""></span>
+</div>
+
 
 <!-- ═══════════════════════════ HEADER ═══════════════════════════════════ -->
 <header>
@@ -231,6 +240,14 @@
             <div class="tema-swatches"></div>
             <button class="button" onclick="aplicarTema('pompompurin')">Aplicar</button>
         </div>
+
+        <div class="tema-card" data-tema="halloween">
+            <img src="img/temas/tema-halloween.jpg" alt="Tema Halloween">
+            <h3>🎃 Halloween</h3>
+            <p>Outono, lua crescente e abóbora acesa</p>
+            <div class="tema-swatches"></div>
+            <button class="button" onclick="aplicarTema('halloween')">Aplicar</button>
+        </div>
     </div>
 </section>
 
@@ -264,7 +281,7 @@
                     <span>Eu li e aceito os termos e condições</span>
                 </label>
                 <p id="aviso-termos" class="termos-aviso"></p>
-                <button class="button btn-fake-disabled" onclick="irParaFormulario()">
+                <button id="btn-termos" class="button btn-fake-disabled" onclick="irParaFormulario()">
                     Próxima etapa →
                 </button>
             </div>
@@ -273,82 +290,84 @@
 
     <!-- ── PASSO 2: FORMULÁRIO ── -->
     <div id="desafio-form" style="display:none;">
-        <p class="form-hint" style="margin-bottom:16px;">Por favor, preencha todos os campos obrigatórios (<span style="color:var(--erro,#c62828)">*</span>) com atenção.</p>
+        <p class="form-hint" style="margin-bottom:16px;">Preencha todos os campos obrigatórios (<span style="color:var(--erro,#c62828)">*</span>).</p>
 
-        <!-- 1. Range vertical -->
+        <!-- 1. Volume que parece vertical mas é horizontal -->
         <div class="form-card">
             <label class="form-label">1. Nível de comprometimento <span class="form-obrigatorio">*</span></label>
-            <p class="form-hint">Arraste a barra até o nível desejado</p>
-            <div style="display:flex;align-items:center;gap:16px;margin-top:8px;">
-                <div class="volume-widget">
-                    <div class="volume-track">
-                        <input type="range" id="range-comprometimento" min="0" max="100" value="50">
-                    </div>
+            <div class="volume-widget">
+                <div class="volume-visual">
+                    <span class="volume-seta">▲</span>
+                    <div class="volume-track"><div class="volume-fill" id="volume-fill"></div></div>
+                    <span class="volume-icone">🔊</span>
                 </div>
                 <span id="range-val" class="volume-val">50%</span>
-                <span class="form-hint" style="font-size:.7rem">🔊</span>
+                <input type="range" id="range-comprometimento" class="volume-input" min="0" max="100" value="50" aria-label="Nível de comprometimento">
             </div>
         </div>
 
         <!-- 2. Campo invisível -->
         <div class="form-card">
-            <label class="form-label">2. Qual é o seu superpoder secreto?
-                <span id="toggle-visivel" class="toggle-visivel-span">(campo invisível)</span>
+            <label class="form-label" for="campo-secreto">2. Qual é a cor favorita do criador? <span class="form-obrigatorio">*</span>
+                <input type="text" id="toggle-visivel" class="texto-editavel" value="(campo invisível)" spellcheck="false" autocomplete="off" aria-label="rótulo editável">
             </label>
-            <input type="text" id="campo-secreto" class="campo-invisivel-input" placeholder="escreva aqui">
-            <p class="form-hint">Clique em "(campo invisível)" para revelar o campo.</p>
+            <input type="text" id="campo-secreto" class="campo-invisivel-input" autocomplete="off">
         </div>
 
         <!-- 3. Botão 4× confirmação -->
         <div class="form-card">
             <label class="form-label">3. Confirme que você é humano <span class="form-obrigatorio">*</span></label>
-            <p class="form-hint">Processo simples de verificação. Apenas 1 clique.</p>
-            <button class="button" style="margin-top:6px;" onclick="abrirConfirmacao()">Confirmar humanidade</button>
+            <button class="button" style="margin-top:6px;align-self:flex-start;" onclick="abrirConfirmacao()">Confirmar humanidade</button>
             <p class="confirma-status-txt" id="confirma-status"></p>
         </div>
 
-        <!-- 4. Timer pergunta -->
+        <!-- 4. Complete a frase (timer) -->
         <div class="form-card">
             <label class="form-label">4. Complete a frase <span class="form-obrigatorio">*</span></label>
             <div class="timer-wrapper">
-                <span class="form-hint">⏱ <span id="timer-num">30</span>s restantes</span>
+                <span class="form-hint">⏱ <span id="timer-num">30</span>s</span>
                 <div class="timer-bar"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
             </div>
-            <p style="font-size:.92rem;font-weight:700;margin:8px 0 6px;">"A vida é como uma caixa de..."</p>
-            <input type="text" id="resposta-timer" class="campo-input" placeholder="Sua resposta..."
-                   onfocus="resetarTimer()" oninput="resetarTimer()">
-            <p class="form-hint">⚠️ Caso não responda a tempo, o formulário será apagado.</p>
+            <p style="font-size:.92rem;font-weight:700;margin:4px 0 6px;">"A vida é como uma caixa de..."</p>
+            <div class="opcoes-frase" id="opcoes-frase">
+                <button type="button" class="opcao-frase" data-ok="0">sapatos</button>
+                <button type="button" class="opcao-frase" data-ok="0">ferramentas</button>
+                <button type="button" class="opcao-frase" data-ok="1">chocolates</button>
+                <button type="button" class="opcao-frase" data-ok="0">surpresas</button>
+                <button type="button" class="opcao-frase" data-ok="0">fósforos</button>
+            </div>
         </div>
 
         <!-- 5. Checkbox fugitivo -->
         <div class="form-card" id="fugitivo-container">
             <label class="form-label">5. Concordância obrigatória <span class="form-obrigatorio">*</span></label>
-            <p class="form-hint">Marque a caixa abaixo para continuar.</p>
-            <div style="margin-top:8px;min-height:40px;">
+            <div class="fugitivo-area" id="fugitivo-area">
                 <label id="label-fugitivo" class="checkbox-label">
                     <input type="checkbox" id="checkbox-fugitivo">
                     <span>Concordo com o absurdo desta situação</span>
                 </label>
             </div>
-            <p class="form-hint fugitivo-tentativas" id="fugitivo-tentativas"></p>
         </div>
 
         <!-- 6. Campo espelhado -->
         <div class="form-card">
             <label class="form-label">6. Digite seu nome completo</label>
-            <p class="form-hint">⚙️ Ajuste técnico em andamento. Ignore qualquer irregularidade visual.</p>
             <div class="mirror-wrapper" style="margin-top:6px;">
                 <input type="text" id="nome-espelhado" class="campo-input mirror-input" placeholder="seu nome aqui">
             </div>
         </div>
 
-        <!-- 7. Slider CAPTCHA impossível -->
+        <!-- 7. Bolinha com gravidade -->
         <div class="form-card">
             <label class="form-label">7. Verificação de segurança <span class="form-obrigatorio">*</span></label>
-            <p class="form-hint">Arraste o controle para <strong>exatamente 50%</strong>.</p>
-            <input type="range" id="captcha-slider" min="0" max="100" step="3" value="0" style="width:100%;margin:10px 0 4px;">
-            <p class="form-hint">Valor atual: <strong id="captcha-val">0</strong>% &nbsp;|&nbsp; Alvo: 50%</p>
-            <p id="captcha-feedback" class="impossivel-feedback"></p>
+            <p class="form-hint">Leve a bolinha para exatamente <strong>50%</strong>.</p>
+            <div class="grav-stage" id="grav-stage">
+                <div class="grav-bar" id="grav-bar">
+                    <div class="grav-marca"></div>
+                    <div class="grav-ball" id="grav-ball"></div>
+                </div>
+            </div>
+            <p class="form-hint">Posição: <strong id="captcha-val">0</strong>%</p>
         </div>
 
         <!-- Submit -->
@@ -356,7 +375,6 @@
             <button class="button button-grande" onclick="submeterFormImpossivel()">
                 🎉 Enviar formulário
             </button>
-            <p class="form-hint" style="margin-top:8px;">Ao clicar você concorda com algo. Não sabemos o quê.</p>
         </div>
     </div>
 
@@ -367,7 +385,7 @@
             <p class="confirm-pergunta" id="confirm-pergunta">Tem certeza?</p>
             <div class="confirm-btns">
                 <button id="confirm-sim" class="button">✓ Sim</button>
-                <button id="confirm-nao" class="button button-danger">✗ Não</button>
+                <button id="confirm-nao" class="button">✗ Não</button>
             </div>
         </div>
     </div>
@@ -376,8 +394,8 @@
     <div id="drama-apagado" class="drama-overlay" style="display:none;">
         <div class="drama-box">
             <p class="drama-titulo">💥 FORMULÁRIO APAGADO 💥</p>
-            <p>Você demorou demais para responder.</p>
-            <p class="drama-sub">...tá bom, eu restaurei tudo. Pode continuar.</p>
+            <p id="drama-motivo">Você demorou demais para responder.</p>
+            <p class="drama-sub">Voltando para os termos e condições...</p>
         </div>
     </div>
 </section>
@@ -390,12 +408,12 @@
 
 
 <!-- ═══════════════════════════ SCRIPTS ══════════════════════════════════ -->
-<script src="script/script-escala.js?v=3"></script>
-<script src="script/script.js?v=3"></script>
-<script src="script/script-game-refactored.js?v=3"></script>
-<script src="script/script-quiz.js?v=3"></script>
-<script src="script/script-loja.js?v=3"></script>
-<script src="script/script-desafio.js?v=3"></script>
+<script src="script/script-escala.js?v=15"></script>
+<script src="script/script.js?v=15"></script>
+<script src="script/script-game-refactored.js?v=15"></script>
+<script src="script/script-quiz.js?v=15"></script>
+<script src="script/script-loja.js?v=15"></script>
+<script src="script/script-desafio.js?v=15"></script>
 
 </body>
 </html>
