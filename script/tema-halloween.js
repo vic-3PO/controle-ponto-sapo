@@ -22,6 +22,13 @@
         aranha:    { ligada: true, min: 8000,  max: 18000 },  // ms entre descidas
         velocidade: 1,        // multiplicador de duração: 2 = metade da velocidade, 0.5 = dobro
         movelMaxLargura: 700, // px — abaixo disso vale a coluna "movel"
+
+        // Transição de morcegos ao trocar de seção (HalloweenTema.transicao)
+        transicao: {
+            morcegos:     { desktop: 20, movel: 12 },  // quantidade (12 a 24)
+            duracao:      800,   // ms — total, do primeiro morcego ao overlay sumir
+            momentoTroca: 0.4,   // fração da duração em que o conteúdo é trocado (0.4 ≈ 320 ms)
+        },
     };
 
     const FADE_MS = 700;   // deve casar com a transition do .hw-cenario no CSS
@@ -133,6 +140,7 @@
         mqReduz.removeEventListener('change', reconstruir);
         mqMovel.removeEventListener('change', reconstruir);
         document.removeEventListener('visibilitychange', aoMudarVisibilidade);
+        cancelarTransicao();   // se houver troca de seção pendente, ela é executada antes de limpar
         desmontar(true);
     }
 
@@ -407,8 +415,77 @@
         if (document.hidden) pausar(); else retomar();
     }
 
+    // ── Transição de morcegos entre seções ───────────────────────────────────
+    // Overlay fixo (pointer-events:none) com um enxame de morcegos cruzando a tela.
+    // trocarConteudo() roda em CFG.transicao.momentoTroca da duração, quando o enxame
+    // está cobrindo a tela; ao final o overlay é removido. Só transform/opacity.
+    let trans = null;   // { overlay, cb, trocou, tTroca, tFim }
+
+    function transicao(trocarConteudo) {
+        // Já há uma em andamento: não cria outro overlay. Antes da troca, o clique mais
+        // recente vira o destino; depois da troca, é aplicado direto (sem perder o clique).
+        if (trans) {
+            if (!trans.trocou) trans.cb = trocarConteudo; else trocarConteudo();
+            return;
+        }
+        // Sem animação: tema inativo, aba oculta ou movimento reduzido
+        if (!ativo || !cena || cena.reduz || document.hidden) { trocarConteudo(); return; }
+
+        const T = CFG.transicao;
+        const n = mqMovel.matches ? T.morcegos.movel : T.morcegos.desktop;
+        const viagem = T.duracao * 0.62;            // cada morcego atravessa em ~62% do total
+        const atrasoMax = T.duracao - viagem;       // e começa em atrasos aleatórios
+
+        const overlay = criar('hw-transicao');
+        overlay.setAttribute('aria-hidden', 'true');
+
+        // véu escuro suave: esconde a troca de conteúdo no meio da passagem
+        const veu = criar('hw-veu');
+        overlay.appendChild(veu);
+        veu.animate([{ opacity: 0 }, { opacity: 0.5, offset: T.momentoTroca }, { opacity: 0 }],
+                    { duration: T.duracao, easing: 'ease-in-out' });
+
+        for (let i = 0; i < n; i++) {
+            const m = criar('hw-morcego-t');
+            const larg = rnd(40, 110);
+            m.style.cssText = 'top:' + rnd(-4, 94).toFixed(1) + 'vh;width:' + larg.toFixed(0) + 'px;height:' +
+                              (larg / 2).toFixed(0) + 'px;--bater:' + rnd(0.10, 0.18).toFixed(2) + 's;';
+            m.innerHTML = SVG_MORCEGO;
+            overlay.appendChild(m);
+            m.animate([
+                { transform: 'translate(-18vw,0)',                                opacity: 0 },
+                { opacity: 0.95, offset: 0.12 },
+                { opacity: 0.95, offset: 0.85 },
+                { transform: 'translate(118vw,' + rnd(-14, 14).toFixed(0) + 'vh)', opacity: 0 },
+            ], { duration: viagem, delay: rnd(0, atrasoMax), easing: 'linear', fill: 'both' });
+        }
+        document.body.appendChild(overlay);
+
+        const t = trans = { overlay, cb: trocarConteudo, trocou: false, tTroca: null, tFim: null };
+        t.tTroca = setTimeout(() => {
+            t.trocou = true;
+            try { t.cb(); } catch (e) { console.error(e); }
+        }, T.duracao * T.momentoTroca);
+        t.tFim = setTimeout(() => {
+            overlay.remove();
+            if (trans === t) trans = null;
+        }, T.duracao);
+    }
+
+    // Usada pelo desativar(): executa a troca pendente (para não perder a navegação),
+    // cancela os timers e remove o overlay.
+    function cancelarTransicao() {
+        const t = trans;
+        if (!t) return;
+        trans = null;
+        clearTimeout(t.tTroca);
+        clearTimeout(t.tFim);
+        t.overlay.remove();
+        if (!t.trocou) { try { t.cb(); } catch (e) { console.error(e); } }
+    }
+
     window.HalloweenTema = {
-        ativar, desativar,
+        ativar, desativar, transicao,
         get ativo() { return ativo; },
         config: CFG,
     };

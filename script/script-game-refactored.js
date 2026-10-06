@@ -1,11 +1,7 @@
 // ============================
 // Controle de Seções e Jogos
 // ============================
-function mostrarSecao(secao) {
-    document.querySelectorAll('main, .secao-jogos, .secao-quiz, .secao-loja').forEach(el => {
-        el.style.display = el.id === secao ? 'block' : 'none';
-    });
-}
+// (a navegação entre seções vive em script.js: mostrarSecao / aplicarSecao)
 
 // Adiciona event listeners para os seletores de dificuldade
 function inicializarEventListeners() {

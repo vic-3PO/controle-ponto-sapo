@@ -118,7 +118,7 @@ function carregarScriptHalloween() {
     if (!_promessaHalloween) {
         _promessaHalloween = new Promise((ok, falha) => {
             const s = document.createElement('script');
-            s.src = 'script/tema-halloween.js?v=16';
+            s.src = 'script/tema-halloween.js?v=17';
             s.onload  = () => ok(window.HalloweenTema);
             s.onerror = () => { _promessaHalloween = null; s.remove(); falha(new Error('tema-halloween.js não carregou')); };
             document.head.appendChild(s);

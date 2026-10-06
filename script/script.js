@@ -13,7 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ─── Navegação entre seções ───────────────────────────────────────────────────
+// Ponto único de navegação: todos os botões .nav-pill chamam mostrarSecao().
+// No tema Halloween a troca passa pela transição de morcegos; nos demais (ou com
+// movimento reduzido / aba oculta) HalloweenTema.transicao executa a troca direto.
 function mostrarSecao(secao) {
+    const trocar = () => aplicarSecao(secao);
+    if (window.HalloweenTema) window.HalloweenTema.transicao(trocar);
+    else trocar();
+}
+
+// Faz a troca de fato: exibe a seção, marca o botão ativo e salva a escolha.
+function aplicarSecao(secao) {
     ['controle','jogos','quiz','loja','desafio'].forEach(s => {
         const el = document.getElementById(s);
         if (el) el.style.display = (s === secao) ? 'block' : 'none';
@@ -26,9 +36,9 @@ function mostrarSecao(secao) {
     localStorage.setItem('secaoAtiva', secao);
 }
 
+// Ao carregar a página não há transição.
 function restaurarSecaoAtiva() {
-    const secao = localStorage.getItem('secaoAtiva') || 'controle';
-    mostrarSecao(secao);
+    aplicarSecao(localStorage.getItem('secaoAtiva') || 'controle');
 }
 
 // ─── Seletores de mês e ano ───────────────────────────────────────────────────

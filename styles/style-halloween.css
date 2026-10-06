@@ -166,6 +166,18 @@ body.tema-halloween footer {
     background: radial-gradient(ellipse at 72% 14%, rgba(240, 244, 255, 0.95), rgba(190, 200, 255, 0.55) 55%, rgba(150, 160, 230, 0.35));
 }
 
+/* transição entre seções: enxame de morcegos por cima de tudo (criado em HalloweenTema.transicao) */
+.hw-transicao {
+    position: fixed;
+    inset: 0;
+    z-index: 500;            /* acima do header (100), abaixo dos modais (1000) */
+    pointer-events: none;
+    overflow: hidden;
+}
+.hw-veu { position: absolute; inset: 0; background: #0A0713; opacity: 0; }
+.hw-morcego-t { position: absolute; left: 0; opacity: 0; will-change: transform, opacity; }
+.hw-morcego-t svg { display: block; width: 100%; height: 100%; fill: #6B57A8; }
+
 /* ── Animações CSS do cenário (só sem prefers-reduced-motion) ───────────── */
 @media (prefers-reduced-motion: no-preference) {
     /* batida de asas: cada morcego tem sua frequência em --bater */

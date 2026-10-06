@@ -13,22 +13,6 @@ function irParaFormulario() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Garante navegação para o desafio mesmo com script.js antigo em cache
-    const btnDesafio = document.querySelector('[data-secao="desafio"]');
-    if (btnDesafio) {
-        btnDesafio.addEventListener('click', () => {
-            ['controle','jogos','quiz','loja'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.style.display = 'none';
-            });
-            const s = document.getElementById('desafio');
-            if (s) s.style.display = 'block';
-            document.querySelectorAll('.nav-pill').forEach(p => {
-                p.classList.toggle('active', p.dataset.secao === 'desafio');
-            });
-        });
-    }
-
     // Pegadinha: marcada, o botão PARECE desabilitado mas funciona.
     // Desmarcada, o botão PARECE habilitado mas não funciona.
     const cbTermos  = document.getElementById('cb-termos');
