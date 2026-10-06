@@ -37,7 +37,7 @@ function aplicarTema(temaNome) {
     if (temaNome !== 'padrao') document.body.classList.add(`tema-${temaNome}`);
 
     localStorage.setItem('tema-atual', temaNome);
-    atualizarQueda(temaNome);
+    atualizarCenarioHalloween(temaNome);
 
     // Título
     const titulo = document.getElementById('titulo-principal');
@@ -107,64 +107,33 @@ function carregarTemaAtual() {
 
 document.addEventListener('DOMContentLoaded', carregarTemaAtual);
 
-// ─── Halloween: SVGs caindo como neve ────────────────────────────────────────
-const SVGS_QUEDA = [
-    'halloween-pumpkin-head-outline-svgrepo-com', 'halloween-smiling-pumpkin-head-outline-svgrepo-com',
-    'halloween-witch-hat-outline-svgrepo-com',    'halloween-scary-mask-outline-svgrepo-com',
-    'halloween-tomb-cross-svgrepo-com',           'halloween-candles-couple-outlined-ornament-svgrepo-com',
-    'evil-halloween-circular-scary-face-outline-svgrepo-com',
-    '46771', '2819770', '3357489', '151310',
-].map(n => `img/halloween/${n}.svg`);
 
-// SVGs pretos recoloridos com filter (mask-image é bloqueado em file://)
-const FILTROS_QUEDA = [
-    'invert(58%) sepia(96%) saturate(1800%) hue-rotate(352deg) brightness(104%)',  // laranja
-    'invert(58%) sepia(96%) saturate(1800%) hue-rotate(352deg) brightness(104%)',  // laranja
-    'invert(62%) sepia(45%) saturate(1400%) hue-rotate(222deg) brightness(105%)',  // roxo
-    'invert(93%) sepia(18%) saturate(500%) hue-rotate(340deg) brightness(100%)',   // creme
-    'invert(80%) sepia(60%) saturate(600%) hue-rotate(8deg) brightness(105%)',     // dourado
-];
+// ─── Halloween: cenário animado (script/tema-halloween.js, carregado sob demanda) ───
+// O arquivo só é baixado quando o tema Halloween é usado; com ele salvo em
+// 'tema-atual', o carregamento começa já no DOMContentLoaded (aplicarTema).
+let _promessaHalloween = null;
 
-// <img> + estilos inline (funciona em file:// e em http) e animação via Web Animations API.
-function atualizarQueda(temaNome) {
-    let caixa = document.getElementById('hw-queda');
-
-    if (temaNome !== 'halloween') {
-        if (caixa) caixa.remove();
-        return;
+function carregarScriptHalloween() {
+    if (window.HalloweenTema) return Promise.resolve(window.HalloweenTema);
+    if (!_promessaHalloween) {
+        _promessaHalloween = new Promise((ok, falha) => {
+            const s = document.createElement('script');
+            s.src = 'script/tema-halloween.js?v=16';
+            s.onload  = () => ok(window.HalloweenTema);
+            s.onerror = () => { _promessaHalloween = null; s.remove(); falha(new Error('tema-halloween.js não carregou')); };
+            document.head.appendChild(s);
+        });
     }
-    if (caixa) return; // já está caindo
+    return _promessaHalloween;
+}
 
-    caixa = document.createElement('div');
-    caixa.id = 'hw-queda';
-    caixa.setAttribute('aria-hidden', 'true');
-    caixa.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;overflow:hidden;' +
-                          'pointer-events:none;z-index:0;';
-
-    const altura = window.innerHeight;
-    const total  = window.innerWidth < 700 ? 14 : 28;
-    const rnd    = (a, b) => a + Math.random() * (b - a);
-    const sorteia = lista => lista[Math.floor(Math.random() * lista.length)];
-
-    for (let i = 0; i < total; i++) {
-        const tam = rnd(32, 68);
-        const el  = document.createElement('img');
-        el.src = sorteia(SVGS_QUEDA);
-        el.alt = '';
-        el.draggable = false;
-        el.style.cssText =
-            'position:absolute;top:0;display:block;' +
-            'left:' + rnd(0, 100) + 'vw;width:' + tam + 'px;height:' + tam + 'px;' +
-            'object-fit:contain;opacity:' + rnd(0.55, 0.9).toFixed(2) + ';' +
-            'filter:' + sorteia(FILTROS_QUEDA) + ';';
-        caixa.appendChild(el);
-
-        const deriva = rnd(-60, 60), giro = rnd(-200, 200);
-        const anim = el.animate([
-            { transform: 'translate(0px, -80px) rotate(0deg)' },
-            { transform: 'translate(' + deriva + 'px, ' + (altura + 80) + 'px) rotate(' + giro + 'deg)' },
-        ], { duration: rnd(8, 16) * 1000, iterations: Infinity, easing: 'linear' });
-        anim.currentTime = rnd(0, 8000); // espalha pela tela já no início
+function atualizarCenarioHalloween(temaNome) {
+    if (temaNome === 'halloween') {
+        carregarScriptHalloween()
+            // se o usuário trocou de tema enquanto o script carregava, não ativa
+            .then(h => { if (document.body.classList.contains('tema-halloween')) h.ativar(); })
+            .catch(err => console.warn(err.message));
+    } else if (window.HalloweenTema) {
+        window.HalloweenTema.desativar();
     }
-    document.body.appendChild(caixa);
 }

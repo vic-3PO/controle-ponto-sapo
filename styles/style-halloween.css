@@ -1,22 +1,27 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    TEMA HALLOWEEN — noite roxa, lua cheia, abóbora acesa
-   Variáveis em style.css (body.tema-halloween). Aqui: decoração e ajustes.
-   Fundo e mascotes são ilustrações (JPG); morcegos e aranha são SVGs recoloridos via filter (mask-image não funciona em file://).
+   Tudo escopado em body.tema-halloween (ou dentro de .hw-cenario, que só existe
+   com o tema ativo). Variáveis base em style.css; cenário criado por
+   script/tema-halloween.js. Animações só em transform/opacity e só quando o
+   usuário NÃO pede movimento reduzido.
 ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Decoração de fundo (só no tema) ────────────────────────────────────── */
-.hw-deco { display: none; }
+/* ── Tokens extras do tema ──────────────────────────────────────────────── */
+body.tema-halloween {
+    --hw-laranja:       #E8650D;
+    --hw-laranja-claro: #FF9A3D;
+    --hw-veneno:        #A3E635;                  /* verde-veneno: acento secundário */
+    --hw-card:          rgba(28, 22, 41, 0.96);   /* leve transparência: cenário "vaza" um pouco */
+    --hw-tinta-botao:   #1B1008;                  /* texto escuro sobre laranja (contraste ~6:1) */
 
-body.tema-halloween .hw-deco {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 0;            /* acima do fundo da página, abaixo do app */
-    pointer-events: none;
-    overflow: hidden;
+    /* teias de aranha nos cantos (SVG inline em data-URI) */
+    --hw-teia-e: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%23B7A8D0' stroke-width='1' opacity='.5'%3E%3Cpath d='M0 0H60M0 0L52 26M0 0L42 42M0 0L26 52M0 0V60'/%3E%3Cpath d='M14 0Q4 4 0 14M28 0Q9 9 0 28M42 0Q13 13 0 42M56 0Q17 17 0 56'/%3E%3C/g%3E%3C/svg%3E");
+    --hw-teia-d: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%23B7A8D0' stroke-width='1' opacity='.5'%3E%3Cpath d='M60 0H0M60 0L8 26M60 0L18 42M60 0L34 52M60 0V60'/%3E%3Cpath d='M46 0Q56 4 60 14M32 0Q51 9 60 28M18 0Q47 13 60 42M4 0Q43 17 60 56'/%3E%3C/g%3E%3C/svg%3E");
+
+    background: var(--fundo);   /* o céu em camadas vem do .hw-cenario */
 }
 
-/* o app fica acima da decoração */
+/* conteúdo sempre acima do cenário */
 body.tema-halloween main,
 body.tema-halloween section,
 body.tema-halloween footer {
@@ -24,90 +29,351 @@ body.tema-halloween footer {
     z-index: 1;
 }
 
-/* morcegos cruzando a tela */
+/* ═══════════════════════════════════════════════════════════════════════════
+   CENÁRIO (criado por tema-halloween.js) — fica ATRÁS do conteúdo
+═══════════════════════════════════════════════════════════════════════════ */
+.hw-cenario {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    transition: opacity 0.7s ease;   /* entrada/saída suave (FADE_MS no JS) */
+}
+
+.hw-camada { position: absolute; inset: 0; }
+
+/* céu noturno: gradiente + brilho roxo no alto + brasa laranja no horizonte */
+.hw-ceu {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 22% at 50% 100%, rgba(232, 101, 13, 0.20), transparent 70%),
+        radial-gradient(ellipse 70% 40% at 80% 18%, rgba(123, 79, 191, 0.30), transparent 70%),
+        linear-gradient(180deg, #07050F 0%, #140D2B 38%, #2A1647 74%, #3A1B4A 100%);
+}
+
+/* estrelas: 3 camadas; as posições vêm de box-shadow gerada no JS */
+.hw-estrelas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 2px; height: 2px;
+    border-radius: 50%;
+    background: transparent;
+}
+
+/* lua grande com halo (halo = gradiente radial, sem blur) */
+.hw-lua {
+    position: absolute;
+    top: 17vh;
+    right: 7vw;
+    width: clamp(90px, 15vw, 170px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    isolation: isolate;   /* o halo (z-index:-1) fica atrás da lua mas acima do céu */
+    background:
+        radial-gradient(circle at 30% 34%, rgba(190, 165, 95, 0.55) 0 7%, transparent 8%),
+        radial-gradient(circle at 62% 60%, rgba(190, 165, 95, 0.45) 0 10%, transparent 11%),
+        radial-gradient(circle at 70% 28%, rgba(190, 165, 95, 0.40) 0 5%, transparent 6%),
+        radial-gradient(circle at 36% 36%, #FFF6D6, #F3E2A0 62%, #D9C27A);
+}
+
+.hw-lua::before {
+    content: '';
+    position: absolute;
+    inset: -70%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 236, 170, 0.38) 0%, rgba(255, 236, 170, 0.12) 38%, transparent 62%);
+    z-index: -1;
+}
+
+/* cemitério + árvores secas, ancorados no rodapé */
+.hw-cemiterio {
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%;
+    height: clamp(150px, 28vh, 280px);
+}
+
+/* névoa rasteira: ladrilhos de elipses em gradiente; translateX(-50%) fecha o loop sem emenda */
+.hw-nevoa {
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 200%;
+    height: 20vh;
+    background-repeat: repeat-x;
+    background-size: 50% 100%;
+}
+.hw-n1 {
+    background-image:
+        radial-gradient(ellipse 22% 60% at 18% 78%, rgba(200, 190, 235, 0.20), transparent 70%),
+        radial-gradient(ellipse 28% 50% at 55% 88%, rgba(200, 190, 235, 0.16), transparent 70%),
+        radial-gradient(ellipse 20% 55% at 86% 74%, rgba(200, 190, 235, 0.18), transparent 70%);
+}
+.hw-n2 {
+    height: 14vh;
+    background-image:
+        radial-gradient(ellipse 26% 55% at 30% 85%, rgba(170, 255, 140, 0.10), transparent 70%),
+        radial-gradient(ellipse 24% 60% at 72% 80%, rgba(200, 190, 235, 0.14), transparent 70%);
+}
+
+/* morcegos */
 .hw-morcego {
     position: absolute;
-    left: -90px;
-    opacity: 0.55;
-    filter: invert(62%) sepia(45%) saturate(1400%) hue-rotate(222deg) brightness(105%);
-    animation: hw-voo 26s linear infinite;
+    left: 0;
+    will-change: transform;
 }
+.hw-morcego svg { display: block; width: 100%; height: 100%; }
+.hw-asa { transform-box: fill-box; }
+.hw-asa-e { transform-origin: 100% 65%; }
+.hw-asa-d { transform-origin: 0% 65%; }
 
-.hw-m1 { top: 14vh; width: 64px; height: 32px; animation-duration: 26s; }
-.hw-m2 { top: 38vh; width: 44px; height: 22px; animation-duration: 34s; animation-delay: -12s; }
-.hw-m3 { top: 62vh; width: 52px; height: 26px; animation-duration: 30s; animation-delay: -22s; }
+/* fantasminhas */
+.hw-fantasma { position: absolute; }
+.hw-fantasma svg { display: block; width: 100%; height: 100%; }
 
-@keyframes hw-voo {
-    0%   { transform: translate(0, 0)        scaleY(1); }
-    25%  { transform: translate(28vw, -26px) scaleY(0.8); }
-    50%  { transform: translate(56vw, 12px)  scaleY(1); }
-    75%  { transform: translate(84vw, -22px) scaleY(0.8); }
-    100% { transform: translate(calc(100vw + 120px), 0) scaleY(1); }
+/* queda de abóboras e doces */
+.hw-queda-item {
+    position: absolute;
+    top: 0;
+    will-change: transform;
 }
+.hw-queda-item svg { display: block; width: 100%; height: 100%; }
 
-/* aranha descendo no fio */
+/* aranha: fio comprido (some atrás do header sticky) + corpo */
+.hw-aranha-cx {
+    position: absolute;
+    top: 0;
+    right: 9vw;
+    width: 34px;
+    height: 34px;
+}
 .hw-fio {
     position: absolute;
-    top: 0; right: 24vw;
-    width: 1px; height: 130px;
-    background: #6b5a8a;
-    transform-origin: top center;
-    animation: hw-fio 7s ease-in-out infinite;
+    left: 50%;
+    bottom: calc(100% - 14px);
+    width: 1px;
+    height: 100vh;
+    background: rgba(201, 188, 232, 0.55);
 }
+.hw-aranha { display: block; width: 100%; height: 100%; }
 
-.hw-aranha {
+/* raio: flash suave (opacity animada pelo JS, no máx. 0,38) */
+.hw-raio {
     position: absolute;
-    left: -22px; bottom: -40px;
-    width: 46px; height: 46px;
-    filter: invert(75%) sepia(25%) saturate(700%) hue-rotate(230deg) brightness(105%);
+    inset: 0;
+    opacity: 0;
+    background: radial-gradient(ellipse at 72% 14%, rgba(240, 244, 255, 0.95), rgba(190, 200, 255, 0.55) 55%, rgba(150, 160, 230, 0.35));
 }
 
-@keyframes hw-fio {
-    0%, 100% { transform: scaleY(0.55); }
-    50%      { transform: scaleY(1); }
+/* ── Animações CSS do cenário (só sem prefers-reduced-motion) ───────────── */
+@media (prefers-reduced-motion: no-preference) {
+    /* batida de asas: cada morcego tem sua frequência em --bater */
+    .hw-asa-e { animation: hw-bater-e var(--bater, 0.36s) ease-in-out infinite; }
+    .hw-asa-d { animation: hw-bater-d var(--bater, 0.36s) ease-in-out infinite; }
+
+    /* estrelas piscando em tempos diferentes */
+    .hw-e1 { animation: hw-piscar 3.1s ease-in-out infinite; }
+    .hw-e2 { animation: hw-piscar 4.7s ease-in-out -1.5s infinite; }
+    .hw-e3 { animation: hw-piscar 6.3s ease-in-out -3s infinite; }
+
+    /* lua pulsando (o halo respira) */
+    .hw-lua::before { animation: hw-lua-pulsa 6s ease-in-out infinite; }
+
+    /* névoa deslizando em loop */
+    .hw-n1 { animation: hw-nevoa 70s linear infinite; }
+    .hw-n2 { animation: hw-nevoa 110s linear infinite reverse; }
+
+    /* brilho da abóbora acesa do cemitério */
+    .hw-brilho { animation: hw-tremeluz 3.4s ease-in-out infinite; }
 }
 
-/* ── Ajustes do tema ────────────────────────────────────────────────────── */
-body.tema-halloween {
-    background:
-        linear-gradient(rgba(20,16,31,0.74), rgba(20,16,31,0.88)),
-        url('../img/halloween/fundo.jpg') center / cover fixed,
-        var(--fundo);
+@keyframes hw-bater-e { 0%, 100% { transform: rotate(0) scaleY(1); }  50% { transform: rotate(16deg)  scaleY(0.55); } }
+@keyframes hw-bater-d { 0%, 100% { transform: rotate(0) scaleY(1); }  50% { transform: rotate(-16deg) scaleY(0.55); } }
+@keyframes hw-piscar     { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+@keyframes hw-lua-pulsa  { 0%, 100% { opacity: 0.75; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+@keyframes hw-nevoa      { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes hw-tremeluz   { 0%, 100% { opacity: 0.8; } 40% { opacity: 1; } 70% { opacity: 0.65; } }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MASCOTE — reação por humor (só CSS, lida de #sapo-img[data-estado])
+   O movimento fica no .mascote-wrapper (não na <img>), então o fade de troca de
+   imagem e a reação não brigam. Todos os keyframes começam e terminam em
+   "repouso", então trocar de humor não dá pulo visual.
+═══════════════════════════════════════════════════════════════════════════ */
+body.tema-halloween .mascote-wrapper {
+    margin-top: 24px;            /* espaço p/ o chapéu — só no Halloween */
+    transform-origin: 50% 80%;
 }
 
+/* a respiração genérica da <img> sai; a reação vive no wrapper */
+body.tema-halloween #sapo-img { animation: none; }
+body.tema-halloween #sapo-img.mascote-troca { animation: fadeInBounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+body.tema-halloween #sapo-img {
+    border-color: var(--hw-laranja);
+    box-shadow: 0 0 18px rgba(255, 138, 43, 0.45);
+}
+
+/* rico: borda e brilho dourados + chapéu de bruxa */
+body.tema-halloween #sapo-img[data-estado="rico"] {
+    border-color: #F5C542;
+    box-shadow: 0 0 22px rgba(245, 197, 66, 0.65);
+}
+
+/* halo dourado atrás da imagem (opacity pulsa) */
+body.tema-halloween .mascote-wrapper:has(#sapo-img[data-estado="rico"])::after {
+    content: '';
+    position: absolute;
+    inset: -18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 205, 70, 0.55) 45%, transparent 72%);
+    z-index: 0;
+    opacity: 0.7;
+}
+
+/* chapéu de bruxa (SVG em data-URI) — pseudo-elemento do wrapper, não do <img> */
+body.tema-halloween .mascote-wrapper:has(#sapo-img[data-estado="rico"])::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    width: 92px;
+    height: 70px;
+    z-index: 2;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 84 64'%3E%3Cellipse cx='42' cy='53' rx='40' ry='9' fill='%232A1647' stroke='%237B4FBF' stroke-width='1.5'/%3E%3Cpath d='M22 52Q30 30 44 6Q46 1 50 8Q60 30 64 52Z' fill='%233A2166' stroke='%237B4FBF' stroke-width='1.2'/%3E%3Cpath d='M24 45Q42 54 62 45L63 52Q42 61 22 52Z' fill='%23E8650D'/%3E%3Crect x='38' y='47' width='10' height='8' rx='1' fill='none' stroke='%23F5C542' stroke-width='2'/%3E%3C/svg%3E") center / contain no-repeat;
+    transform: translateX(-50%) rotate(-8deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    /* neutro (padrão): respiração sutil */
+    body.tema-halloween .mascote-wrapper { animation: hw-respirar 4.2s ease-in-out infinite; }
+    /* feliz: balanço leve */
+    body.tema-halloween .mascote-wrapper:has(#sapo-img[data-estado="feliz"]) { animation: hw-balanco 3.2s ease-in-out infinite; }
+    /* triste: tremidinha em rajadas (o resto do ciclo fica parado) */
+    body.tema-halloween .mascote-wrapper:has(#sapo-img[data-estado="triste"]) { animation: hw-tremer 2.6s ease-in-out infinite; }
+    /* rico: flutua; halo dourado pulsa; chapéu "pousa" ao entrar */
+    body.tema-halloween .mascote-wrapper:has(#sapo-img[data-estado="rico"]) { animation: hw-flutuar 2.8s ease-in-out infinite; }
+    body.tema-halloween .mascote-wrapper:has(#sapo-img[data-estado="rico"])::after  { animation: hw-halo 2.4s ease-in-out infinite; }
+    body.tema-halloween .mascote-wrapper:has(#sapo-img[data-estado="rico"])::before { animation: hw-chapeu 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+}
+
+@keyframes hw-respirar { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+@keyframes hw-balanco  { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+@keyframes hw-tremer   { 0%, 40%, 100% { transform: translateX(0); } 8% { transform: translateX(-2px); } 16% { transform: translateX(2px); } 24% { transform: translateX(-1.5px); } 32% { transform: translateX(1.5px); } }
+@keyframes hw-flutuar  { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes hw-halo     { 0%, 100% { opacity: 0.45; } 50% { opacity: 0.9; } }
+@keyframes hw-chapeu   { from { opacity: 0; transform: translateX(-50%) translateY(-14px) rotate(-8deg) scale(0.7); } to { opacity: 1; transform: translateX(-50%) rotate(-8deg) scale(1); } }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPONENTES
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* títulos: Creepster (já carregada no index) com fallback Nunito */
 body.tema-halloween h1,
 body.tema-halloween h2 {
     font-family: 'Creepster', 'Nunito', system-ui, sans-serif;
     font-weight: 400;
     letter-spacing: 0.04em;
 }
+body.tema-halloween h1 { font-size: 2.2rem; text-shadow: 0 0 18px rgba(232, 101, 13, 0.45); }
+body.tema-halloween #sapo-status h2 { font-size: 1.15rem; text-transform: none; letter-spacing: 0.06em; color: var(--hw-laranja-claro); }
+body.tema-halloween .secao-jogos h2,
+body.tema-halloween .secao-quiz h2,
+body.tema-halloween .secao-loja h2 { text-shadow: 0 0 14px rgba(232, 101, 13, 0.35); }
 
-body.tema-halloween h1 { font-size: 2.2rem; text-shadow: 0 0 18px rgba(232,101,13,0.45); }
-
-/* mascote: moldura redonda com brilho de abóbora */
-body.tema-halloween #sapo-img,
-body.tema-halloween .header-mascote {
-    box-shadow: 0 0 18px rgba(255,138,43,0.45);
+/* cards: fundo semi-opaco + teia nos cantos superiores + brilho laranja no hover */
+body.tema-halloween .config-card,
+body.tema-halloween .tabela-wrapper,
+body.tema-halloween #sapo-status {
+    background:
+        var(--hw-teia-e) top left  / 58px 58px no-repeat,
+        var(--hw-teia-d) top right / 58px 58px no-repeat,
+        var(--hw-card);
+}
+body.tema-halloween .mes-selector-inner {
+    background:
+        var(--hw-teia-e) top left  / 40px 40px no-repeat,
+        var(--hw-teia-d) top right / 40px 40px no-repeat,
+        var(--hw-card);
 }
 
-body.tema-halloween .button:hover      { background: #C24F06; }
-body.tema-halloween .tema-ativo        { background: #8F3A04 !important; }
-body.tema-halloween .btn-fake-disabled { filter: grayscale(0.4); }
+body.tema-halloween .config-card:hover,
+body.tema-halloween .tabela-wrapper:hover,
+body.tema-halloween #sapo-status:hover,
+body.tema-halloween .mes-selector-inner:hover {
+    border-color: var(--hw-laranja);
+    box-shadow: 0 0 0 1px rgba(232, 101, 13, 0.45), 0 8px 28px rgba(232, 101, 13, 0.28);
+}
 
-/* campos e superfícies que usam branco fixo */
+/* tabela: cabeçalho escuro (laranja-claro sobre roxo-escuro passa de 5:1) */
+body.tema-halloween #tabela-ponto thead {
+    background: linear-gradient(to right, var(--fundo-2), #2E2150);
+}
+body.tema-halloween #tabela-ponto th { border-bottom-color: var(--hw-veneno); }
+body.tema-halloween #tabela-ponto tbody tr:hover td { background: rgba(232, 101, 13, 0.10); }
+
+/* inputs: foco verde-veneno; Plex Mono nas horas continua vindo de style.css */
 body.tema-halloween input,
 body.tema-halloween select,
-body.tema-halloween textarea {
-    color-scheme: dark;
+body.tema-halloween textarea { color-scheme: dark; }
+
+body.tema-halloween .num-input:focus,
+body.tema-halloween #tabela-ponto td input[type="time"]:focus,
+body.tema-halloween #meses:focus,
+body.tema-halloween #anos:focus {
+    border-color: var(--hw-veneno);
+    box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.22);
 }
 
+/* botões: texto escuro sobre laranja (o branco original ficava ~3:1) */
+body.tema-halloween .button {
+    color: var(--hw-tinta-botao);
+    background: linear-gradient(180deg, #FF8A2B, var(--hw-laranja));
+    box-shadow: 0 3px 12px rgba(232, 101, 13, 0.40);
+}
+body.tema-halloween .button:hover {
+    background: linear-gradient(180deg, #FFA24D, #FF7A1F);
+    box-shadow: 0 0 0 2px rgba(232, 101, 13, 0.50), 0 8px 24px rgba(232, 101, 13, 0.45);
+}
+body.tema-halloween .button-danger        { background: #FF5C5C; color: #1B0808; box-shadow: 0 3px 12px rgba(255, 92, 92, 0.35); }
+body.tema-halloween .button-danger:hover  { background: #FF7676; box-shadow: 0 0 0 2px rgba(255, 92, 92, 0.5), 0 8px 24px rgba(255, 92, 92, 0.4); }
+body.tema-halloween .button-confirm       { background: #4CC27A; color: #06170D; box-shadow: 0 3px 12px rgba(76, 194, 122, 0.35); }
+body.tema-halloween .button-confirm:hover { background: #63D68E; }
+body.tema-halloween .button-cancel        { background: #3A2D57; color: var(--texto); box-shadow: none; }
+body.tema-halloween .button-cancel:hover  { background: #4A3A70; }
+body.tema-halloween .button.tema-ativo    { background: #8F3A04 !important; color: #FFE9D2; }
+body.tema-halloween .btn-fake-disabled    { filter: grayscale(0.4); }
+
+/* navegação e chips de dia */
+body.tema-halloween .nav-pill:hover { border-color: var(--hw-veneno); color: var(--hw-veneno); }
+body.tema-halloween .nav-pill.active,
+body.tema-halloween .dia-chip.ativo { color: var(--hw-tinta-botao); }
+
+/* balão do mascote: gradiente laranja pede texto escuro */
+body.tema-halloween #sapo-mensagem {
+    color: var(--hw-tinta-botao);
+    background: linear-gradient(135deg, #FF8A2B 0%, #FFB15C 100%);
+}
+body.tema-halloween .mascote-balao::before { border-bottom-color: #FF8A2B; }
+
+body.tema-halloween .header-mascote { box-shadow: 0 0 18px rgba(255, 138, 43, 0.45); border-color: var(--hw-laranja); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVO — 360px
+═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 700px) {
     body.tema-halloween h1 { font-size: 1.7rem; }
 }
 
+@media (max-width: 640px) {
+    /* no celular as linhas da tabela viram cards: cada uma ganha o fundo opaco do card */
+    body.tema-halloween #tabela-ponto tbody tr { background: var(--hw-card); }
+    body.tema-halloween .hw-lua { top: 15vh; right: 5vw; }
+    body.tema-halloween .mascote-wrapper { margin-top: 28px; }
+}
+
+/* movimento reduzido: o cenário segue visível, só parado (JS não cria queda nem raio) */
 @media (prefers-reduced-motion: reduce) {
-    .hw-morcego, .hw-fio { animation: none !important; }
-    .hw-morcego { left: 12vw; }
-    .hw-m2 { left: 55vw; }
-    .hw-m3 { left: 80vw; }
+    .hw-cenario { transition: none; }
 }
